@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Interactive demo: why two rotating star disks projected on a dome can fake counter-rotation on camera, but can never reproduce the overlap-free, straight-at-the-equator star trails we photograph. With a virtual Tenerife star-trail panorama.">
+<meta property="og:title" content="Two Disks, One Sky">
+<meta property="og:description" content="The flat-earth two-disk dome trick, the overlap problem, and a virtual Tenerife star-trail panorama beside the real photo.">
+<meta property="og:image" content="https://funwithscience.net/star-trails/tenerife.jpg">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%23070a12'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%23f0b35b' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='4' fill='none' stroke='%238ab9ff' stroke-width='2'/%3E%3C/svg%3E">
+<title>Two Disks, One Sky</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: an observatory console. One sky canvas per experiment, an instrument panel beside it, readouts in mono.
+   Single committed dark theme: this is a night-sky instrument and reads as one on any host background. */
+:root{
+  --bg:#070a12; --panel:#0e1322; --panel2:#131a2e; --line:#222b45; --fg:#e8ebf4; --muted:#8f98ae;
+  --accent:#f0b35b; --fieldA:#8ab9ff; --fieldB:#ff8f9c; --ok:#7fd3a4; --warn:#ff9f6e;
+  --display:'Instrument Serif',Georgia,'Times New Roman',serif;
+  --body:'Source Sans 3','Segoe UI',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.5;
+  padding-block:28px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(38px,6vw,64px);line-height:1;margin:6px 0 10px;text-wrap:balance;letter-spacing:-.01em}
+h1 em{font-style:italic;color:var(--accent)}
+.lede{max-width:68ch;color:var(--muted);margin:0;font-size:17px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:0}
+.tab{appearance:none;background:none;border:0;border-bottom:2px solid transparent;color:var(--muted);font:600 15px var(--body);padding:10px 14px;cursor:pointer;margin-bottom:-1px}
+.tab .n{font-family:var(--mono);font-weight:400;color:var(--accent);margin-right:8px;font-size:13px}
+.tab[aria-selected="true"]{color:var(--fg);border-bottom-color:var(--accent)}
+.tab:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.panel{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:18px;align-items:start}
+.panel.wide{grid-template-columns:minmax(0,1fr)}
+.stage{min-width:0;display:flex;flex-direction:column;gap:10px}
+canvas{display:block;width:100%;max-width:100%;border-radius:6px;background:#05070e;border:1px solid var(--line)}
+.controls{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.controls h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0;line-height:1.1}
+.ctl{display:flex;flex-direction:column;gap:4px}
+.ctl .row{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:14px}
+.ctl .val{font-family:var(--mono);font-size:13px;color:var(--accent);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--accent);margin:0}
+.btns{display:flex;flex-wrap:wrap;gap:6px}
+.btn{appearance:none;background:var(--panel2);color:var(--fg);border:1px solid var(--line);border-radius:6px;font:600 14px var(--body);padding:7px 11px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.on{background:var(--accent);color:#1a1206;border-color:var(--accent)}
+.btn.small{font-size:13px;padding:5px 9px}
+.check{display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer}
+.check input{accent-color:var(--accent);width:16px;height:16px;margin:0}
+.readout{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--mono);font-size:13px;color:var(--muted);padding:8px 2px;font-variant-numeric:tabular-nums}
+.readout b{font-weight:600;color:var(--fg)}
+.swA{color:var(--fieldA)} .swB{color:var(--fieldB)}
+.note{background:var(--panel);border-left:3px solid var(--accent);padding:12px 16px;border-radius:0 6px 6px 0;font-size:15px;color:var(--fg);max-width:78ch}
+.note p{margin:0 0 8px} .note p:last-child{margin:0}
+.note .k{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+.steel{border-left-color:var(--fieldB)} .steel .k{color:var(--fieldB)}
+.photo{display:grid;grid-template-columns:minmax(0,1fr);gap:6px}
+.photo img{width:100%;max-width:100%;border-radius:6px;border:1px solid var(--line);display:block}
+.cap{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.cap b{color:var(--fg);font-weight:600}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.legend{display:flex;gap:16px;font-size:13px;color:var(--muted);flex-wrap:wrap}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px;background:currentColor}
+.legend .a{color:var(--fieldA)} .legend .b{color:var(--fieldB)}
+hr{border:0;border-top:1px solid var(--line);margin:4px 0}
+footer{color:var(--muted);font-size:13px;max-width:78ch}
+@media (max-width:820px){.panel{grid-template-columns:minmax(0,1fr)} .pair{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){.auto-anim{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">funwithscience.net · star-trail lab</div>
+    <h1>Two Disks, <em>One Sky</em></h1>
+    <p class="lede">A flat-earth demo gets counter-rotating star trails by projecting two spinning light disks onto one dome and filming from outside. The trick is real, but it is a camera trick. The question that matters is what two disks look like from <em>underneath</em>, and whether they can ever produce the straight trails we photograph at the equator.</p>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button class="tab" role="tab" id="tab-dome" aria-selected="true" data-panel="dome"><span class="n">1</span>The dome trick</button>
+    <button class="tab" role="tab" id="tab-fields" aria-selected="false" data-panel="fields"><span class="n">2</span>Growing the fields</button>
+    <button class="tab" role="tab" id="tab-tenerife" aria-selected="false" data-panel="tenerife"><span class="n">3</span>Virtual Tenerife</button>
+  </nav>
+
+  <!-- ───────── Panel 1: the dome trick ───────── -->
+  <section class="panel" id="panel-dome" role="tabpanel">
+    <div class="stage">
+      <canvas id="c1" aria-label="3D view of two light disks projected on a dome"></canvas>
+      <div class="readout">
+        <span>On screen, field <b class="swA">A</b> turns <b id="r1a">—</b></span>
+        <span>field <b class="swB">B</b> turns <b id="r1b">—</b></span>
+        <span>camera <b id="r1cam">outside the dome</b></span>
+        <span>disks actually spin <b id="r1act">the same way</b></span>
+      </div>
+      <div class="note">
+        <span class="k">What to notice</span>
+        <p>Both disks spin the same way. From outside you look at field A's <em>back</em> (through the dome shell) and at field B's <em>front</em> (the inside surface, seen across the dome). A rotation seen from behind is mirrored, so A appears to counter-rotate against B. Slide the camera inside the dome, where any observer on a flat plane would actually be, and both fields turn the same way.</p>
+      </div>
+      <div class="note steel">
+        <span class="k">Their side of it</span>
+        <p>A flat earther can skip the camera trick entirely and simply spin the second disk the other way. Press <b>Reverse disk B</b> to grant that. It fixes the direction, so counter-rotation on its own is not the problem. Tab 2 shows what is.</p>
+      </div>
+    </div>
+    <aside class="controls">
+      <h2>Camera &amp; disks</h2>
+      <div class="ctl"><div class="row"><label for="s1view">Camera: outside → inside</label><span class="val" id="v1view">0%</span></div><input type="range" id="s1view" min="0" max="100" value="0"></div>
+      <div class="btns"><button class="btn" id="b1fly">Fly inside</button><button class="btn" id="b1rev">Reverse disk B</button><button class="btn" id="b1play">Pause</button></div>
+      <div class="ctl"><div class="row"><label for="s1az">Orbit around dome</label><span class="val" id="v1az">62°</span></div><input type="range" id="s1az" min="0" max="360" value="62"></div>
+      <div class="ctl"><div class="row"><label for="s1el">Camera height</label><span class="val" id="v1el">26°</span></div><input type="range" id="s1el" min="2" max="85" value="26"></div>
+      <div class="ctl"><div class="row"><label for="s1dist">Distance</label><span class="val" id="v1dist">3.0 R</span></div><input type="range" id="s1dist" min="14" max="60" value="30"></div>
+      <div class="btns"><button class="btn small" data-az="62" data-el="26">Their camera</button><button class="btn small" data-az="0" data-el="20">Behind A</button><button class="btn small" data-az="180" data-el="20">Behind B</button><button class="btn small" data-az="90" data-el="80">From above</button></div>
+      <p class="cap">You can also drag on the picture to orbit (while the camera is outside).</p>
+      <div class="ctl"><div class="row"><label for="s1speed">Spin speed</label><span class="val" id="v1speed">1.0×</span></div><input type="range" id="s1speed" min="0" max="30" value="10"></div>
+      <div class="ctl"><div class="row"><label for="s1trail">Motion trail</label><span class="val" id="v1trail">14°</span></div><input type="range" id="s1trail" min="0" max="40" value="14"></div>
+      <hr>
+      <div class="legend"><span class="a">Field A (north disk)</span><span class="b">Field B (south disk)</span></div>
+      <p class="cap">Dim stars are seen through the dome shell. Bright stars are on the surface facing the camera. Little spoked wheels above the dome are the projector disks themselves.</p>
+    </aside>
+  </section>
+
+  <!-- ───────── Panel 2: growing the fields ───────── -->
+  <section class="panel" id="panel-fields" role="tabpanel" hidden>
+    <div class="stage">
+      <canvas id="c2" aria-label="All-sky view from under the dome showing two rotating star fields"></canvas>
+      <div class="readout">
+        <span>overlap begins at radius <b id="r2lim">40°</b></span>
+        <span>status <b id="r2ov">separate</b></span>
+        <span>trails through the zenith <b id="r2eq">curved</b></span>
+      </div>
+      <div class="note">
+        <span class="k">What to notice</span>
+        <p>This is the whole sky seen from underneath, zenith in the centre, horizon at the rim (north up, east left, as on a star chart). Grow the radius and the two fields have to overlap. In the overlap you get two sets of trails crossing through each other, going opposite ways or the same way with opposite curvature. No photograph has ever shown that.</p>
+        <p>The real equatorial sky shows something two disks can never make: straight trails running east–west through the zenith, bending one way toward the north horizon and the other way toward the south. Press <b>Globe sky</b> to see what that takes: the second pole has to be the exact antipode of the first, which puts it <em>below</em> a flat earth, not on a dome above it.</p>
+      </div>
+      <div class="note steel">
+        <span class="k">Their side of it</span>
+        <p>"Keep the disks small, so they never overlap." Then each disk covers at most half the angular distance between the poles, and everything between them is a starless band. Yet Orion, Sirius and the whole zodiac are seen from both hemispheres on the same night. The stars they share are precisely the ones that must sit in both disks at once.</p>
+      </div>
+    </div>
+    <aside class="controls">
+      <h2>Disk geometry</h2>
+      <div class="ctl"><div class="row"><label for="s2r">Field radius (both)</label><span class="val" id="v2r">30°</span></div><input type="range" id="s2r" min="5" max="90" value="30"></div>
+      <div class="ctl"><div class="row"><label for="s2sep">Pole separation</label><span class="val" id="v2sep">80°</span></div><input type="range" id="s2sep" min="10" max="180" value="80"></div>
+      <div class="ctl"><div class="row"><label for="s2trail">Trail length (exposure)</label><span class="val" id="v2trail">30°</span></div><input type="range" id="s2trail" min="2" max="120" value="30"></div>
+      <div class="ctl"><div class="row"><label for="s2speed">Spin speed</label><span class="val" id="v2speed">1.0×</span></div><input type="range" id="s2speed" min="0" max="30" value="10"></div>
+      <div class="btns"><button class="btn" id="b2rev">Reverse disk B</button><button class="btn" id="b2play">Pause</button></div>
+      <label class="check"><input type="checkbox" id="k2col" checked> Colour stars by disk</label>
+      <hr>
+      <div class="btns"><button class="btn small" id="b2flat">Their setup</button><button class="btn small" id="b2grow">Grow to overlap</button><button class="btn small" id="b2globe">Globe sky</button></div>
+      <p class="cap">Globe sky = separation 180°, radius 90°, disk B reversed. Two disks only reproduce the real sky when they stop being two disks.</p>
+    </aside>
+  </section>
+
+  <!-- ───────── Panel 3: virtual Tenerife ───────── -->
+  <section class="panel" id="panel-tenerife" role="tabpanel" hidden>
+    <div class="stage">
+      <canvas id="c3" aria-label="Simulated star-trail panorama from Tenerife"></canvas>
+      <div class="readout">
+        <span>looking <b id="r3dir">ENE</b></span>
+        <span>field of view <b id="r3fov">180°</b></span>
+        <span>exposure <b id="r3exp">3.0 h</b></span>
+        <span>model <b id="r3model">globe, 28.3° N</b></span>
+      </div>
+      <div class="photo">
+        <img id="photo" src="tenerife.jpg" alt="Long-exposure star-trail panorama over Teide Observatory, Tenerife: a tight anticlockwise spiral around the north celestial pole on the left, trails straightening toward the east in the middle, and curving the other way toward the right.">
+        <div class="cap"><b>Reference:</b> star trails over Teide Observatory, Tenerife (28.3° N). Photo: J.C. Casado / IAC. The simulation above opens at the same heading and span.</div>
+      </div>
+      <div class="note">
+        <span class="k">What to notice</span>
+        <p>Turn to face north and the trails spiral anticlockwise around a point 28° above the horizon. Turn east and they run as nearly straight, tilted lines. Turn south and they bow the other way, around a pole that is 28° <em>below</em> the southern horizon. One axis, one rotation, seen from a tilted ball. Switch the model to <b>Two disks</b>, one centred over each pole of the flat earth, and grow the radius: the same tour shows what the dome version would have to look like instead.</p>
+      </div>
+    </div>
+    <aside class="controls">
+      <h2>Observer</h2>
+      <div class="ctl"><div class="row"><label for="s3head">Heading</label><span class="val" id="v3head">72°</span></div><input type="range" id="s3head" min="0" max="359" value="72"></div>
+      <div class="btns"><button class="btn small" data-head="0">North</button><button class="btn small" data-head="90">East</button><button class="btn small" data-head="180">South</button><button class="btn small" data-head="270">West</button><button class="btn small" id="b3photo">Match photo</button></div>
+      <div class="ctl"><div class="row"><label for="s3fov">Field of view</label><span class="val" id="v3fov">180°</span></div><input type="range" id="s3fov" min="50" max="220" value="180"></div>
+      <div class="ctl"><div class="row"><label for="s3exp">Exposure</label><span class="val" id="v3exp">3.0 h</span></div><input type="range" id="s3exp" min="1" max="24" value="12"></div>
+      <div class="ctl"><div class="row"><label for="s3lat">Latitude</label><span class="val" id="v3lat">28.3° N</span></div><input type="range" id="s3lat" min="-90" max="90" value="28.3" step="0.1"></div>
+      <div class="btns"><button class="btn small" id="b3ten">Tenerife</button><button class="btn small" data-lat="0">Equator</button><button class="btn small" data-lat="51.5">London</button></div>
+      <hr>
+      <div class="btns"><button class="btn on" id="b3globe">Globe</button><button class="btn" id="b3disks">Two disks</button></div>
+      <div class="ctl"><div class="row"><label for="s3r">Disk radius (both)</label><span class="val" id="v3r">30°</span></div><input type="range" id="s3r" min="5" max="90" value="30"></div>
+      <div class="btns"><button class="btn small" id="b3rev">Reverse disk B</button></div>
+      <p class="cap" id="c3note">Two disks: disk A is centred over the north pole (seen 28.3° up, due north) and disk B over the flat earth's southern pole, the mirror position 28.3° up, due south. Both sit on the dome above the plane. Overlap begins once the radius passes half the gap between them.</p>
+    </aside>
+  </section>
+
+  <footer>Everything here is one engine: a set of stars around a pole, turned about that pole. Tab 1 views it from a 3D camera, tab 2 from directly underneath, tab 3 through a panoramic lens at a real latitude. The globe is the special case where the second pole is the first one's antipode and spins the same way.</footer>
+</div>
+
+<script>
+(function(){
+'use strict';
+const D=Math.PI/180, R2D=180/Math.PI;
+
+/* ---------- vector helpers ---------- */
+const dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+const sub=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]];
+const len=a=>Math.hypot(a[0],a[1],a[2]);
+const norm=a=>{const l=len(a)||1;return [a[0]/l,a[1]/l,a[2]/l]};
+const lerp=(a,b,t)=>a+(b-a)*t;
+const lerp3=(a,b,t)=>[lerp(a[0],b[0],t),lerp(a[1],b[1],t),lerp(a[2],b[2],t)];
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+function rng(seed){let a=seed>>>0;return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+
+/* A field: stars in polar coords about its pole. rho = angular distance from pole, psi = position angle. */
+function makeField(n,seed,maxRho){const r=rng(seed),out=[],c=1-Math.cos(maxRho);
+  for(let i=0;i<n;i++){const u=r();const rho=Math.acos(1-u*c);const psi=r()*2*Math.PI;const m=Math.pow(r(),2.2);out.push({rho,psi,m,tint:r()})}
+  return out}
+/* right-handed basis (e1,e2,p); reference is east so poles in the N–S plane never jump */
+function basis(p){const e1=norm(cross([0,1,0],p));const e2=cross(p,e1);return [e1,e2]}
+function dirAt(star,p,E,psiShift){const ps=star.psi+psiShift,sr=Math.sin(star.rho),cr=Math.cos(star.rho),c=Math.cos(ps),s=Math.sin(ps);
+  return [cr*p[0]+sr*(c*E[0][0]+s*E[1][0]),cr*p[1]+sr*(c*E[0][1]+s*E[1][1]),cr*p[2]+sr*(c*E[0][2]+s*E[1][2])]}
+
+const COL={A:'138,185,255',B:'255,143,156'};
+function tintOf(t){return t<0.14?'255,182,122':(t<0.55?'236,240,255':'180,206,255')}
+
+/* ---------- canvas sizing ---------- */
+function fit(canvas,aspect){const w=canvas.clientWidth||600;const dpr=Math.min(2,window.devicePixelRatio||1);
+  const W=Math.round(w*dpr),H=Math.round(w/aspect*dpr);
+  if(canvas.width!==W||canvas.height!==H){canvas.width=W;canvas.height=H;canvas.style.height=(w/aspect)+'px'}
+  return {W,H,dpr}}
+
+/* ---------- control binding ---------- */
+function bind(id,obj,key,fmt,valId,scale,onInput){const el=document.getElementById(id),v=document.getElementById(valId);
+  const set=()=>{obj[key]=(+el.value)*(scale||1);if(v)v.textContent=fmt(obj[key]);if(onInput)onInput()};
+  el.addEventListener('input',set);set();
+  return {el,set:(x)=>{el.value=x/(scale||1);set()}}}
+
+/* ================= PANEL 1: the dome trick ================= */
+const c1=document.getElementById('c1'),g1=c1.getContext('2d');
+const P1={view:0,rev:false,speed:1,trail:14,theta:0,playing:true,flyTarget:null,az:62,el:26,dist:3.0};
+const ALPHA1=50*D,R1=30*D;
+const pA1=[Math.sin(ALPHA1),0,Math.cos(ALPHA1)],pB1=[-Math.sin(ALPHA1),0,Math.cos(ALPHA1)];
+const EA1=basis(pA1),EB1=basis(pB1);
+const fA1=makeField(70,11,R1),fB1=makeField(70,12,R1);
+
+function cam1(e){const s=e*e*(3-2*e);const ca=Math.cos(P1.az*D),sa=Math.sin(P1.az*D),ce=Math.cos(P1.el*D),se=Math.sin(P1.el*D);
+  const cOut=[P1.dist*ce*ca,P1.dist*ce*sa,Math.max(0.05,P1.dist*se)];
+  const c=lerp3(cOut,[0,0,0.08],s),t=lerp3([-0.15,0,0.5],[0,0,1.08],s),u=lerp3([0,0,1],[0,-1,0],s);
+  const fov=lerp(68,172,s);const f=norm(sub(t,c));let r=cross(f,u);if(len(r)<1e-4)r=cross(f,[1,0,0]);r=norm(r);const up=cross(r,f);
+  return {c,f,r,up,half:fov/2*D}}
+function proj(cam,P,W,H){const v=norm(sub(P,cam.c));const fz=dot(v,cam.f);const psi=Math.acos(clamp(fz,-1,1));
+  const x=dot(v,cam.r),y=dot(v,cam.up);const rr=Math.hypot(x,y);const k=(W/2)/cam.half;
+  if(rr<1e-9)return [W/2,H/2,psi];return [W/2+x/rr*psi*k,H/2-y/rr*psi*k,psi]}
+function poly(g,cam,pts,W,H,cull){let pen=false;g.beginPath();
+  for(const P of pts){const q=proj(cam,P,W,H);if(q[2]>cull){pen=false;continue}if(pen)g.lineTo(q[0],q[1]);else{g.moveTo(q[0],q[1]);pen=true}}g.stroke()}
+
+function render1(){const {W,H,dpr}=fit(c1,1.55);const g=g1;const cam=cam1(P1.view);const cull=cam.half*1.25;
+  g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,W,H);
+  const bg=g.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#05070e');bg.addColorStop(1,'#0c1222');g.fillStyle=bg;g.fillRect(0,0,W,H);
+  g.lineWidth=1*dpr;
+  // ground (flat plane) — only while the camera is outside enough to see its rim
+  if(P1.view<0.55){const pts=[];let ok=true;for(let i=0;i<=72;i++){const a=i/72*2*Math.PI;const P=[1.4*Math.cos(a),1.4*Math.sin(a),0];const q=proj(cam,P,W,H);if(q[2]>cull){ok=false;break}pts.push(q)}
+    if(ok){g.beginPath();pts.forEach((q,i)=>i?g.lineTo(q[0],q[1]):g.moveTo(q[0],q[1]));g.closePath();g.fillStyle='rgba(60,70,100,'+(0.22*(1-P1.view/0.55))+')';g.fill();g.strokeStyle='rgba(120,135,180,0.35)';g.stroke()}}
+  // dome wireframe
+  g.strokeStyle='rgba(120,150,210,0.22)';
+  for(const lat of [0,20,40,60,80]){const pts=[];for(let i=0;i<=96;i++){const a=i/96*2*Math.PI;pts.push([Math.cos(lat*D)*Math.cos(a),Math.cos(lat*D)*Math.sin(a),Math.sin(lat*D)])}poly(g,cam,pts,W,H,cull)}
+  for(let az=0;az<360;az+=30){const pts=[];for(let i=0;i<=30;i++){const l=i/30*Math.PI/2;pts.push([Math.cos(l)*Math.cos(az*D),Math.cos(l)*Math.sin(az*D),Math.sin(l)])}poly(g,cam,pts,W,H,cull)}
+  // projector disks
+  const sB=P1.rev?-1:1;
+  const disk=(p,E,ang,col)=>{const C=[p[0]*1.32,p[1]*1.32,p[2]*1.32];const rr=0.13;const pts=[];
+    for(let i=0;i<=36;i++){const a=i/36*2*Math.PI;pts.push([C[0]+rr*(Math.cos(a)*E[0][0]+Math.sin(a)*E[1][0]),C[1]+rr*(Math.cos(a)*E[0][1]+Math.sin(a)*E[1][1]),C[2]+rr*(Math.cos(a)*E[0][2]+Math.sin(a)*E[1][2])])}
+    g.strokeStyle='rgba('+col+',0.9)';g.lineWidth=1.4*dpr;poly(g,cam,pts,W,H,cull);
+    for(let k=0;k<3;k++){const a=ang+k*2*Math.PI/3;const Q=[C[0]+rr*(Math.cos(a)*E[0][0]+Math.sin(a)*E[1][0]),C[1]+rr*(Math.cos(a)*E[0][1]+Math.sin(a)*E[1][1]),C[2]+rr*(Math.cos(a)*E[0][2]+Math.sin(a)*E[1][2])];poly(g,cam,[C,Q],W,H,cull)}
+    g.strokeStyle='rgba('+col+',0.25)';g.lineWidth=1*dpr;poly(g,cam,[C,p],W,H,cull);g.setLineDash([]);};
+  disk(pA1,EA1,P1.theta,COL.A);disk(pB1,EB1,P1.theta*sB,COL.B);
+  // stars: far side first (seen through the shell), then near side
+  const tr=P1.trail*D,K=6;
+  const layers=[[],[]];
+  const collect=(field,p,E,sgn,col)=>{for(const st of field){const pts=[];for(let k=K;k>=0;k--){pts.push(dirAt(st,p,E,sgn*(P1.theta-tr*k/K)))}
+    const head=pts[K];const near=dot(head,cam.c)>1;layers[near?1:0].push({pts,near,col,m:st.m})}};
+  collect(fA1,pA1,EA1,1,COL.A);collect(fB1,pB1,EB1,sB,COL.B);
+  for(const L of layers){for(const s of L){const a=s.near?1:0.42;const sz=(2.2+3.2*s.m)*dpr*(s.near?1:0.75);
+      // trail
+      if(tr>0){for(let k=0;k<K;k++){const q0=proj(cam,s.pts[k],W,H),q1=proj(cam,s.pts[k+1],W,H);if(q0[2]>cull||q1[2]>cull)continue;
+        g.strokeStyle='rgba('+s.col+','+(a*0.75*(k+1)/K)+')';g.lineWidth=sz*0.9;g.lineCap='round';g.beginPath();g.moveTo(q0[0],q0[1]);g.lineTo(q1[0],q1[1]);g.stroke()}}
+      const q=proj(cam,s.pts[K],W,H);if(q[2]>cull)continue;
+      g.fillStyle='rgba('+s.col+','+a+')';g.beginPath();g.arc(q[0],q[1],sz*0.55,0,2*Math.PI);g.fill();
+      if(s.near){g.fillStyle='rgba(255,255,255,'+(0.5*s.m)+')';g.beginPath();g.arc(q[0],q[1],sz*0.3,0,2*Math.PI);g.fill()}}}
+  // pole labels
+  g.font=(600)+' '+(13*dpr)+'px '+getComputedStyle(document.body).getPropertyValue('--mono');g.textAlign='center';g.textBaseline='middle';
+  for(const [p,col,lab] of [[pA1,COL.A,'A'],[pB1,COL.B,'B']]){const q=proj(cam,p,W,H);if(q[2]>cull)continue;
+    g.fillStyle='rgba(5,7,14,0.8)';g.beginPath();g.arc(q[0],q[1],10*dpr,0,2*Math.PI);g.fill();g.strokeStyle='rgba('+col+',0.9)';g.lineWidth=1.2*dpr;g.stroke();g.fillStyle='rgba('+col+',1)';g.fillText(lab,q[0],q[1]+0.5*dpr)}
+  // apparent sense readouts
+  const sense=(p,E,sgn)=>{const pole=proj(cam,p,W,H);const st={rho:R1*0.75,psi:0,m:0};const a=proj(cam,dirAt(st,p,E,sgn*P1.theta),W,H),b=proj(cam,dirAt(st,p,E,sgn*(P1.theta+0.04)),W,H);
+    const z=(a[0]-pole[0])*(b[1]-a[1])-(a[1]-pole[1])*(b[0]-a[0]);return z>0?'clockwise':'anticlockwise'};
+  const ra=sense(pA1,EA1,1),rb=sense(pB1,EB1,sB);
+  document.getElementById('r1a').textContent=ra;document.getElementById('r1b').textContent=rb;
+  document.getElementById('r1cam').textContent=len(cam.c)>1?'outside the dome':'inside the dome';
+  document.getElementById('r1act').textContent=P1.rev?'opposite ways (reversed)':'the same way'}
+
+const s1view=bind('s1view',P1,'view',x=>Math.round(x*100)+'%','v1view',0.01);
+const s1az=bind('s1az',P1,'az',x=>Math.round(((x%360)+360)%360)+'°','v1az');
+const s1el=bind('s1el',P1,'el',x=>Math.round(x)+'°','v1el');
+bind('s1dist',P1,'dist',x=>x.toFixed(1)+' R','v1dist',0.1);
+document.querySelectorAll('[data-az]').forEach(b=>b.addEventListener('click',()=>{s1az.set(+b.dataset.az);s1el.set(+b.dataset.el);if(P1.view>0.5)P1.flyTarget=0}));
+(function(){let drag=null;c1.style.touchAction='none';c1.style.cursor='grab';
+  c1.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,az:P1.az,el:P1.el};c1.setPointerCapture(e.pointerId);c1.style.cursor='grabbing'});
+  c1.addEventListener('pointermove',e=>{if(!drag)return;const k=0.4;s1az.set(((drag.az-(e.clientX-drag.x)*k)%360+360)%360);s1el.set(clamp(drag.el+(e.clientY-drag.y)*k,2,85))});
+  const end=()=>{drag=null;c1.style.cursor='grab'};c1.addEventListener('pointerup',end);c1.addEventListener('pointercancel',end)})();
+bind('s1speed',P1,'speed',x=>x.toFixed(1)+'×','v1speed',0.1);
+bind('s1trail',P1,'trail',x=>x+'°','v1trail');
+const b1fly=document.getElementById('b1fly');
+b1fly.addEventListener('click',()=>{P1.flyTarget=P1.view<0.5?1:0});
+const b1rev=document.getElementById('b1rev');b1rev.addEventListener('click',()=>{P1.rev=!P1.rev;b1rev.classList.toggle('on',P1.rev)});
+const b1play=document.getElementById('b1play');b1play.addEventListener('click',()=>{P1.playing=!P1.playing;b1play.textContent=P1.playing?'Pause':'Play'});
+
+/* ================= PANEL 2: growing the fields ================= */
+const c2=document.getElementById('c2'),g2=c2.getContext('2d');
+const P2={r:30,sep:80,trail:30,speed:1,rev:false,colour:true,theta:0,playing:true};
+const fA2=makeField(650,21,Math.PI/2),fB2=makeField(650,22,Math.PI/2);
+function poles2(){const h=P2.sep/2*D;return [[Math.sin(h),0,Math.cos(h)],[-Math.sin(h),0,Math.cos(h)]]}
+function skyXY(d,cx,cy,R){const alt=Math.asin(clamp(d[2],-1,1)),az=Math.atan2(d[1],d[0]);const rho=(Math.PI/2-alt)/(Math.PI/2)*R;return [cx-rho*Math.sin(az),cy-rho*Math.cos(az),alt]}
+function drawTrail(g,field,p,E,sgn,theta,trailRad,rMax,colOf,W,H,toXY,lw){const K=Math.max(2,Math.ceil(trailRad/(2.5*D)));
+  for(const st of field){if(st.rho>rMax)continue;const a=0.25+0.75*st.m;g.strokeStyle='rgba('+colOf(st)+','+a+')';g.lineWidth=lw*(0.6+1.6*st.m);g.beginPath();let pen=false;
+    for(let k=0;k<=K;k++){const d=dirAt(st,p,E,sgn*(theta-trailRad*(1-k/K)));const q=toXY(d);if(!q){pen=false;continue}if(pen)g.lineTo(q[0],q[1]);else{g.moveTo(q[0],q[1]);pen=true}}
+    g.stroke();const d=dirAt(st,p,E,sgn*theta);const q=toXY(d);if(q){g.fillStyle='rgba(255,255,255,'+(0.35+0.55*st.m)+')';g.beginPath();g.arc(q[0],q[1],lw*(0.5+0.9*st.m),0,2*Math.PI);g.fill()}}}
+function render2(){const {W,H,dpr}=fit(c2,1.35);const g=g2;g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,W,H);
+  g.fillStyle='#05070e';g.fillRect(0,0,W,H);const cx=W/2,cy=H/2,R=Math.min(W,H)/2-26*dpr;
+  const sky=g.createRadialGradient(cx,cy,0,cx,cy,R);sky.addColorStop(0,'#070b18');sky.addColorStop(1,'#141c33');g.fillStyle=sky;g.beginPath();g.arc(cx,cy,R,0,2*Math.PI);g.fill();
+  g.strokeStyle='rgba(120,150,210,0.25)';g.lineWidth=1*dpr;for(const a of [30,60]){g.beginPath();g.arc(cx,cy,R*(1-a/90),0,2*Math.PI);g.stroke()}
+  g.strokeStyle='rgba(120,150,210,0.18)';g.beginPath();g.moveTo(cx-R,cy);g.lineTo(cx+R,cy);g.moveTo(cx,cy-R);g.lineTo(cx,cy+R);g.stroke();
+  const [pA,pB]=poles2();const EA=basis(pA),EB=basis(pB);const sB=P2.rev?-1:1;const rMax=P2.r*D,tr=P2.trail*D;
+  const toXY=d=>{if(d[2]<0)return null;const q=skyXY(d,cx,cy,R);return q};
+  g.lineCap='round';
+  drawTrail(g,fA2,pA,EA,1,P2.theta,tr,rMax,st=>P2.colour?COL.A:tintOf(st.tint),W,H,toXY,1.1*dpr);
+  drawTrail(g,fB2,pB,EB,sB,P2.theta,tr,rMax,st=>P2.colour?COL.B:tintOf(st.tint),W,H,toXY,1.1*dpr);
+  // field outlines
+  for(const [p,E,col] of [[pA,EA,COL.A],[pB,EB,COL.B]]){g.strokeStyle='rgba('+col+',0.45)';g.setLineDash([4*dpr,5*dpr]);g.lineWidth=1*dpr;g.beginPath();let pen=false;
+    for(let i=0;i<=120;i++){const d=dirAt({rho:rMax,psi:i/120*2*Math.PI},p,E,0);const q=toXY(d);if(!q){pen=false;continue}if(pen)g.lineTo(q[0],q[1]);else{g.moveTo(q[0],q[1]);pen=true}}g.stroke();g.setLineDash([]);
+    const q=toXY(p);if(q){g.fillStyle='rgba(5,7,14,0.85)';g.beginPath();g.arc(q[0],q[1],9*dpr,0,2*Math.PI);g.fill();g.strokeStyle='rgba('+col+',0.95)';g.stroke()}}
+  g.strokeStyle='rgba(180,200,240,0.6)';g.lineWidth=1.5*dpr;g.beginPath();g.arc(cx,cy,R,0,2*Math.PI);g.stroke();
+  g.fillStyle='rgba(232,235,244,0.85)';g.font='600 '+(13*dpr)+'px '+getComputedStyle(document.body).getPropertyValue('--mono');g.textAlign='center';g.textBaseline='middle';
+  g.fillText('N',cx,cy-R-12*dpr);g.fillText('S',cx,cy+R+12*dpr);g.fillText('E',cx-R-12*dpr,cy);g.fillText('W',cx+R+12*dpr,cy);
+  g.fillStyle='rgba('+COL.A+',1)';for(const [p,col,lab] of [[pA,COL.A,'A'],[pB,COL.B,'B']]){const q=toXY(p);if(q){g.fillStyle='rgba('+col+',1)';g.fillText(lab,q[0],q[1]+0.5*dpr)}}
+  const lim=P2.sep/2;document.getElementById('r2lim').textContent=lim.toFixed(0)+'°';
+  const ov=document.getElementById('r2ov');const over=P2.r>lim+0.01;ov.textContent=over?'OVERLAPPING':'separate';ov.style.color=over?'var(--warn)':'var(--ok)';
+  const eq=document.getElementById('r2eq');const globe=P2.sep>=179.5&&P2.rev;eq.textContent=globe?'straight':'curved';eq.style.color=globe?'var(--ok)':'var(--warn)'}
+bind('s2r',P2,'r',x=>x+'°','v2r');bind('s2sep',P2,'sep',x=>x+'°','v2sep');bind('s2trail',P2,'trail',x=>x+'°','v2trail');bind('s2speed',P2,'speed',x=>x.toFixed(1)+'×','v2speed',0.1);
+const b2rev=document.getElementById('b2rev');b2rev.addEventListener('click',()=>{setRev2(!P2.rev)});
+function setRev2(v){P2.rev=v;b2rev.classList.toggle('on',v)}
+const b2play=document.getElementById('b2play');b2play.addEventListener('click',()=>{P2.playing=!P2.playing;b2play.textContent=P2.playing?'Pause':'Play'});
+document.getElementById('k2col').addEventListener('change',e=>{P2.colour=e.target.checked});
+const setR=(id,v)=>{const el=document.getElementById(id);el.value=v;el.dispatchEvent(new Event('input'))};
+document.getElementById('b2flat').addEventListener('click',()=>{setR('s2sep',80);setR('s2r',30);setRev2(false)});
+document.getElementById('b2grow').addEventListener('click',()=>{setR('s2sep',80);setR('s2r',70);setRev2(false)});
+document.getElementById('b2globe').addEventListener('click',()=>{setR('s2sep',180);setR('s2r',90);setRev2(true)});
+
+/* ================= PANEL 3: virtual Tenerife ================= */
+const c3=document.getElementById('c3'),g3=c3.getContext('2d');
+const P3={heading:72,fov:180,hours:3,lat:28.3,model:'globe',r:30,rev:false};
+const fA3=makeField(1500,31,Math.PI/2),fB3=makeField(1500,32,Math.PI/2);
+function terrain(az){let h=1.2+0.9*Math.sin(az*D*3+0.4)+0.6*Math.sin(az*D*7+2.1)+0.35*Math.sin(az*D*13+0.9);
+  const d=((az-225+540)%360)-180;h+=8.5*Math.exp(-(d*d)/(2*9*9));const d2=((az-140+540)%360)-180;h+=2.2*Math.exp(-(d2*d2)/(2*20*20));return h}
+function compass(h){const n=['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];return n[Math.round(((h%360)+360)%360/22.5)%16]}
+function render3(){const {W,H,dpr}=fit(c3,2.6);const g=g3;g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,W,H);
+  const k=W/P3.fov,hy=H*0.73;
+  const sky=g.createLinearGradient(0,0,0,hy);sky.addColorStop(0,'#05070f');sky.addColorStop(0.7,'#0c1326');sky.addColorStop(1,'#2a2a3c');g.fillStyle=sky;g.fillRect(0,0,W,H);
+  // light-pollution glow near the horizon
+  const glow=g.createLinearGradient(0,hy-40*dpr,0,hy);glow.addColorStop(0,'rgba(240,179,91,0)');glow.addColorStop(1,'rgba(240,179,91,0.22)');g.fillStyle=glow;g.fillRect(0,hy-40*dpr,W,40*dpr);
+  const phi=P3.lat*D;const pA=[Math.cos(phi),0,Math.sin(phi)];let pB,rMax,sB;
+  if(P3.model==='globe'){pB=[-pA[0],0,-pA[2]];rMax=Math.PI/2;sB=-1}else{pB=[-pA[0],0,pA[2]];rMax=P3.r*D;sB=P3.rev?-1:1}
+  const EA=basis(pA),EB=basis(pB);const tr=P3.hours*15*D;
+  const toXY=d=>{const alt=Math.asin(clamp(d[2],-1,1))*R2D;if(alt<-1.5)return null;const az=Math.atan2(d[1],d[0])*R2D;const rel=((az-P3.heading+540)%360+360)%360-180;if(Math.abs(rel)>P3.fov/2+3)return null;return [W/2+rel*k,hy-alt*k]};
+  // trails need wrap-safe polylines: break on large x jumps
+  const K=Math.max(2,Math.ceil(tr/(1.2*D)));g.lineCap='round';
+  const draw=(field,p,E,sgn,colOf)=>{for(const st of field){if(st.rho>rMax)continue;const a=0.3+0.7*st.m;g.strokeStyle='rgba('+colOf(st)+','+a+')';g.lineWidth=dpr*(0.5+1.5*st.m);g.beginPath();let pen=false,px=0;
+      for(let i=0;i<=K;i++){const d=dirAt(st,p,E,sgn*(tr*i/K));const q=toXY(d);if(!q||(pen&&Math.abs(q[0]-px)>W/2)){pen=false;if(!q)continue}if(pen)g.lineTo(q[0],q[1]);else{g.moveTo(q[0],q[1]);pen=true}px=q[0]}g.stroke()}};
+  const nat=st=>tintOf(st.tint);
+  draw(fA3,pA,EA,1,P3.model==='globe'?nat:()=>COL.A);draw(fB3,pB,EB,sB,P3.model==='globe'?nat:()=>COL.B);
+  // pole markers (if above horizon)
+  g.font='600 '+(12*dpr)+'px '+getComputedStyle(document.body).getPropertyValue('--mono');g.textAlign='center';g.textBaseline='middle';
+  for(const [p,col,lab] of [[pA,COL.A,'pole A'],[pB,COL.B,'pole B']]){const q=toXY(p);if(!q)continue;if(P3.model==='globe'&&lab==='pole B')continue;
+    g.strokeStyle='rgba('+col+',0.8)';g.lineWidth=1*dpr;g.beginPath();g.arc(q[0],q[1],6*dpr,0,2*Math.PI);g.stroke();g.fillStyle='rgba('+col+',0.95)';g.fillText(P3.model==='globe'?'celestial pole':lab,q[0],q[1]-13*dpr)}
+  // ground
+  g.fillStyle='#07080c';g.beginPath();g.moveTo(0,H);for(let x=0;x<=W;x+=2*dpr){const az=P3.heading+(x-W/2)/k;g.lineTo(x,hy-terrain(az)*k)}g.lineTo(W,H);g.closePath();g.fill();
+  g.strokeStyle='rgba(240,179,91,0.35)';g.lineWidth=1*dpr;g.beginPath();for(let x=0;x<=W;x+=2*dpr){const az=P3.heading+(x-W/2)/k;const y=hy-terrain(az)*k;x?g.lineTo(x,y):g.moveTo(x,y)}g.stroke();
+  // compass ticks along the horizon
+  g.fillStyle='rgba(232,235,244,0.85)';g.font='600 '+(12*dpr)+'px '+getComputedStyle(document.body).getPropertyValue('--mono');
+  for(let az=0;az<360;az+=45){const rel=((az-P3.heading+540)%360+360)%360-180;if(Math.abs(rel)>P3.fov/2)continue;const x=W/2+rel*k;const lab=compass(az);
+    g.strokeStyle='rgba(232,235,244,0.5)';g.beginPath();g.moveTo(x,H-18*dpr);g.lineTo(x,H-10*dpr);g.stroke();g.fillText(lab.length>2?'':lab,x,H-27*dpr);if(lab.length>2){g.fillStyle='rgba(232,235,244,0.5)';g.fillText(lab,x,H-27*dpr);g.fillStyle='rgba(232,235,244,0.85)'}}
+  document.getElementById('r3dir').textContent=compass(P3.heading)+' ('+Math.round(P3.heading)+'°)';
+  document.getElementById('r3fov').textContent=P3.fov+'°';document.getElementById('r3exp').textContent=P3.hours.toFixed(2).replace(/\.?0+$/,'')+' h';
+  const gap=180-2*Math.abs(P3.lat);document.getElementById('r3model').textContent=(P3.model==='globe'?'globe':'two disks, r '+P3.r+'° (overlap above '+(gap/2).toFixed(0)+'°)'+(P3.rev?', B reversed':''))+', '+Math.abs(P3.lat).toFixed(1)+'° '+(P3.lat<0?'S':'N')}
+let r3pending=false;function scheduleRender3(){if(r3pending)return;r3pending=true;requestAnimationFrame(()=>{r3pending=false;render3()})}
+const s3head=bind('s3head',P3,'heading',x=>Math.round(x)+'°','v3head',1,scheduleRender3);
+const s3fov=bind('s3fov',P3,'fov',x=>x+'°','v3fov',1,scheduleRender3);
+const s3exp=bind('s3exp',P3,'hours',x=>x.toFixed(2).replace(/\.?0+$/,'')+' h','v3exp',0.25,scheduleRender3);
+const s3lat=bind('s3lat',P3,'lat',x=>Math.abs(x).toFixed(1)+'° '+(x<0?'S':'N'),'v3lat',1,scheduleRender3);
+document.querySelectorAll('[data-head]').forEach(b=>b.addEventListener('click',()=>s3head.set(+b.dataset.head)));
+document.querySelectorAll('[data-lat]').forEach(b=>b.addEventListener('click',()=>s3lat.set(+b.dataset.lat)));
+document.getElementById('b3ten').addEventListener('click',()=>s3lat.set(28.3));
+document.getElementById('b3photo').addEventListener('click',()=>{s3head.set(72);s3fov.set(180);s3exp.set(3);s3lat.set(28.3)});
+bind('s3r',P3,'r',x=>x+'°','v3r',1,scheduleRender3);
+const b3rev=document.getElementById('b3rev');b3rev.addEventListener('click',()=>{P3.rev=!P3.rev;b3rev.classList.toggle('on',P3.rev);scheduleRender3()});
+const b3globe=document.getElementById('b3globe'),b3disks=document.getElementById('b3disks');
+function setModel(m){P3.model=m;b3globe.classList.toggle('on',m==='globe');b3disks.classList.toggle('on',m==='disks');scheduleRender3()}
+b3globe.addEventListener('click',()=>setModel('globe'));b3disks.addEventListener('click',()=>setModel('disks'));
+
+/* ================= tabs, loop, resize ================= */
+let active='dome';
+const tabs=document.querySelectorAll('.tab');
+function showTab(name,push){active=name;tabs.forEach(t=>t.setAttribute('aria-selected',String(t.dataset.panel===name)));
+  for(const n of ['dome','fields','tenerife'])document.getElementById('panel-'+n).hidden=(n!==name);
+  if(name==='tenerife')scheduleRender3();else if(name==='fields')render2();else render1();
+  if(push){try{history.replaceState(null,'','#'+name)}catch(e){}}}
+tabs.forEach(t=>t.addEventListener('click',()=>showTab(t.dataset.panel,true)));
+const h=(location.hash||'').replace('#','');if(['dome','fields','tenerife'].includes(h))showTab(h,false);else showTab('dome',false);
+const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+if(reduce){P1.playing=false;P2.playing=false;b1play.textContent='Play';b2play.textContent='Play'}
+let last=performance.now();
+function loop(now){const dt=Math.min(0.1,(now-last)/1000);last=now;
+  if(P1.flyTarget!==null){const dir=Math.sign(P1.flyTarget-P1.view);const nv=P1.view+dir*dt*0.45;if((dir>0&&nv>=P1.flyTarget)||(dir<0&&nv<=P1.flyTarget)){s1view.set(P1.flyTarget);P1.flyTarget=null}else s1view.set(nv);
+    b1fly.textContent=P1.view<0.5?'Fly inside':'Fly outside'}
+  else b1fly.textContent=P1.view<0.5?'Fly inside':'Fly outside';
+  if(active==='dome'){if(P1.playing)P1.theta+=dt*0.5*P1.speed;render1()}
+  else if(active==='fields'){if(P2.playing)P2.theta+=dt*0.25*P2.speed;render2()}
+  requestAnimationFrame(loop)}
+requestAnimationFrame(loop);
+window.addEventListener('resize',()=>{if(active==='tenerife')scheduleRender3()});
+})();
+</script>
+
+</body>
+</html>
