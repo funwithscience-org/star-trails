@@ -85,6 +85,7 @@ footer{color:var(--muted);font-size:13px;max-width:78ch}
     <button class="tab" role="tab" id="tab-dome" aria-selected="true" data-panel="dome"><span class="n">1</span>The dome trick</button>
     <button class="tab" role="tab" id="tab-fields" aria-selected="false" data-panel="fields"><span class="n">2</span>Growing the fields</button>
     <button class="tab" role="tab" id="tab-tenerife" aria-selected="false" data-panel="tenerife"><span class="n">3</span>Virtual Tenerife</button>
+    <button class="tab" role="tab" id="tab-spheres" aria-selected="false" data-panel="spheres"><span class="n">4</span>Personal spheres</button>
   </nav>
 
   <!-- ───────── Panel 1: the dome trick ───────── -->
@@ -188,6 +189,44 @@ footer{color:var(--muted);font-size:13px;max-width:78ch}
       <div class="ctl"><div class="row"><label for="s3r">Disk radius (both)</label><span class="val" id="v3r">30°</span></div><input type="range" id="s3r" min="5" max="90" value="30"></div>
       <div class="btns"><button class="btn small" id="b3rev">Reverse disk B</button></div>
       <p class="cap" id="c3note">Two disks: disk A is centred over the north pole (seen 28.3° up, due north) and disk B over the flat earth's southern pole, the mirror position 28.3° up, due south. Both sit on the dome above the plane. Overlap begins once the radius passes half the gap between them.</p>
+    </aside>
+  </section>
+
+  <!-- ───────── Panel 4: personal spheres ───────── -->
+  <section class="panel" id="panel-spheres" role="tabpanel" hidden>
+    <div class="stage">
+      <canvas id="c4" aria-label="3D globe with Chicago and Washington, each with its own celestial sphere, and rays to the same stars"></canvas>
+      <div class="readout">
+        <span>sphere radius <b id="r4r">130 km</b></span>
+        <span>Chicago–Washington <b id="r4base">954 km</b></span>
+        <span>spheres overlap above <b id="r4half">477 km</b></span>
+        <span>Polaris altitude <b class="swA">Chicago</b> <b id="r4pc">42.6°</b> · <b class="swB">Washington</b> <b id="r4pd">39.6°</b></span>
+        <span id="r4phys" hidden>if stars rode Chicago's sphere, Washington would see Polaris at <b id="r4pp">—</b></span>
+      </div>
+      <div class="note">
+        <span class="k">What to notice</span>
+        <p>A sphere drawn around you is a map of directions. Any radius will do, because a direction has no distance in it; that is why a planetarium works and why astronomers have drawn the celestial sphere for two thousand years. So one observer's personal sphere reproduces everything they see. Build a second one 954 km away and the same star is now marked in two places, because each sphere holds a copy of the direction, not the star. Expand the spheres: the two copies never meet. The rays do, at infinity, and that is where the star is as far as any pair of observers can tell.</p>
+        <p>The one thing the two spheres do not share is "up". Chicago's zenith and Washington's differ by 8.6°, and Polaris stands 3° higher over Chicago for exactly that reason: parallel direction, tilted horizons. On a flat plane every "up" is parallel, and both cities would put Polaris at the same altitude.</p>
+        <p>A sphere turning about an axis through its centre has two fixed points, not one. In each personal sphere the axis enters at the north celestial pole and exits at the south celestial pole, 40° below the southern horizon for these two cities and above it for anyone south of the equator. That second point is not optical. It is what rotating a sphere means. A single disk over the north has one fixed point and cannot produce it.</p>
+      </div>
+      <div class="note steel">
+        <span class="k">Their side of it</span>
+        <p>"The second pole is an optical effect of the observer's celestial sphere; the physical rotation is one disk around Polaris." Grant the sphere, it is a legitimate tool. Then switch on <b>Stars ride on the sphere</b>, which takes the claim literally: the stars are physically on Chicago's sphere. Washington now sees every star in a measurably different direction, and the readout gives the number. Real star positions agree between any two cities on Earth to a fraction of an arcsecond, which puts any physical sphere out past the orbit of Saturn on this baseline alone, and out to light-years once the Earth's orbit is used as the baseline.</p>
+      </div>
+    </div>
+    <aside class="controls">
+      <h2>Two observers</h2>
+      <div class="btns"><button class="btn small" id="b4god">1 · God's eye</button><button class="btn small" id="b4fly">2 · Fly down</button><button class="btn small" id="b4grow">3 · Expand spheres</button><button class="btn small" id="b4all">Play all</button></div>
+      <div class="ctl"><div class="row"><label for="s4cam">Camera: above → between</label><span class="val" id="v4cam">0%</span></div><input type="range" id="s4cam" min="0" max="100" value="0"></div>
+      <div class="ctl"><div class="row"><label for="s4r">Sphere radius</label><span class="val" id="v4r">130 km</span></div><input type="range" id="s4r" min="50" max="3000" value="130" step="10"></div>
+      <div class="ctl"><div class="row"><label for="s4gst">Sidereal time (Greenwich)</label><span class="val" id="v4gst">7.5 h</span></div><input type="range" id="s4gst" min="0" max="2399" value="749"></div>
+      <div class="btns"><button class="btn small" id="b4spin">Spin sky</button></div>
+      <label class="check"><input type="checkbox" id="k4rays" checked> Rays from observer to star</label>
+      <label class="check"><input type="checkbox" id="k4axis" checked> Rotation axis through each sphere</label>
+      <label class="check"><input type="checkbox" id="k4phys"> Stars ride on the sphere (their claim)</label>
+      <hr>
+      <div class="legend"><span class="a">Chicago 41.9° N 87.6° W</span><span class="b">Washington 38.9° N 77.0° W</span></div>
+      <p class="cap">Nine real stars at the sidereal time shown. Altair is up in Chicago but not yet in Washington; Sirius has risen in Washington but not in Chicago. You can drag on the picture to orbit.</p>
     </aside>
   </section>
 
@@ -405,15 +444,111 @@ const b3globe=document.getElementById('b3globe'),b3disks=document.getElementById
 function setModel(m){P3.model=m;b3globe.classList.toggle('on',m==='globe');b3disks.classList.toggle('on',m==='disks');scheduleRender3()}
 b3globe.addEventListener('click',()=>setModel('globe'));b3disks.addEventListener('click',()=>setModel('disks'));
 
+/* ================= PANEL 4: personal spheres ================= */
+const c4=document.getElementById('c4'),g4=c4.getContext('2d');
+const RE=6371;
+const P4={cam:0,r:130,gst:7.49,spin:false,rays:true,axis:true,phys:false,orbitAz:0,orbitEl:0,tween:null,queue:[]};
+const geo=(lat,lon)=>[Math.cos(lat*D)*Math.cos(lon*D),Math.cos(lat*D)*Math.sin(lon*D),Math.sin(lat*D)];
+const frame=p=>{const up=norm(p);const east=norm(cross([0,0,1],up));const north=cross(up,east);return {up,east,north}};
+const OBS=[{name:'Chicago',lat:41.88,lon:-87.63,col:COL.A},{name:'Washington',lat:38.91,lon:-77.04,col:COL.B}];
+OBS.forEach(o=>{o.p=geo(o.lat,o.lon);Object.assign(o,frame(o.p))});
+const STARS=[['Polaris',2.53,89.26],['Vega',18.62,38.78],['Deneb',20.69,45.28],['Altair',19.85,8.87],['Capella',5.28,45.99],['Aldebaran',4.60,16.51],['Betelgeuse',5.92,7.41],['Sirius',6.75,-16.72],['Fomalhaut',22.96,-29.62]].map(s=>({name:s[0],ra:s[1],dec:s[2]}));
+const starDir4=s=>{const a=(s.ra-P4.gst)*15*D,d=s.dec*D;return [Math.cos(d)*Math.cos(a),Math.cos(d)*Math.sin(a),Math.sin(d)]};
+const MID=norm([OBS[0].p[0]+OBS[1].p[0],OBS[0].p[1]+OBS[1].p[1],OBS[0].p[2]+OBS[1].p[2]]);const MF=frame(MID);
+const CHORD=len(sub(OBS[0].p,OBS[1].p))*RE;
+// coarse outline of the contiguous United States (lat, lon), for orientation only
+const US=[[47.6,-122.3],[37.8,-122.4],[34.0,-118.2],[32.7,-117.2],[32.7,-114.6],[31.3,-111.0],[31.8,-106.4],[29.5,-104.0],[29.8,-101.5],[26.0,-97.5],[29.8,-95.4],[30.0,-90.0],[30.4,-87.0],[30.1,-84.0],[27.9,-82.5],[25.1,-81.0],[25.8,-80.2],[30.3,-81.7],[32.8,-79.9],[34.7,-76.7],[36.9,-76.3],[38.9,-75.0],[40.5,-74.0],[41.3,-72.0],[42.4,-71.0],[43.7,-70.3],[44.9,-67.0],[47.3,-68.3],[45.0,-71.5],[45.0,-74.7],[43.6,-76.2],[42.9,-78.9],[42.3,-81.5],[41.7,-83.5],[43.0,-82.4],[44.0,-83.0],[45.5,-84.0],[46.5,-84.5],[47.5,-88.0],[46.8,-92.1],[48.0,-89.5],[49.0,-95.2],[49.0,-123.1],[48.4,-124.7],[47.6,-122.3]].map(q=>geo(q[0],q[1]));
+function cam4(e){const s=e*e*(3-2*e);
+  const c0=[MID[0]*3.1,MID[1]*3.1,MID[2]*3.1],t0=MID,u0=MF.north,f0=52;
+  const c1=[MID[0]+0.22*MF.up[0]-0.55*MF.north[0],MID[1]+0.22*MF.up[1]-0.55*MF.north[1],MID[2]+0.22*MF.up[2]-0.55*MF.north[2]];
+  const t1=[MID[0]+0.3*MF.up[0]+0.4*MF.north[0],MID[1]+0.3*MF.up[1]+0.4*MF.north[1],MID[2]+0.3*MF.up[2]+0.4*MF.north[2]],u1=MF.up,f1=96;
+  let c=lerp3(c0,c1,s),t=lerp3(t0,t1,s),u=lerp3(u0,u1,s);const fov=lerp(f0,f1,s);
+  // drag orbit: rotate the camera position about the look target, around the local up and east axes
+  if(P4.orbitAz||P4.orbitEl){const rel=sub(c,t);const rot=(v,axis,ang)=>{const ca=Math.cos(ang),sa=Math.sin(ang);const k=axis;const kv=cross(k,v);const kd=dot(k,v);return [v[0]*ca+kv[0]*sa+k[0]*kd*(1-ca),v[1]*ca+kv[1]*sa+k[1]*kd*(1-ca),v[2]*ca+kv[2]*sa+k[2]*kd*(1-ca)]};
+    const upAxis=norm(lerp3(MID,MF.up,s));let r2=rot(rel,upAxis,P4.orbitAz*D);const side=norm(cross(upAxis,r2));r2=rot(r2,side,P4.orbitEl*D);c=[t[0]+r2[0],t[1]+r2[1],t[2]+r2[2]];u=rot(u,upAxis,P4.orbitAz*D)}
+  const f=norm(sub(t,c));let r=cross(f,u);if(len(r)<1e-4)r=cross(f,[1,0,0]);r=norm(r);const up=cross(r,f);return {c,f,r,up,half:fov/2*D}}
+function pj4(cam,P,W){const v=sub(P,cam.c);const z=dot(v,cam.f);if(z<0.02)return null;const k=(W/2)/Math.tan(cam.half);return [W/2+dot(v,cam.r)/z*k,W/2/1.4-dot(v,cam.up)/z*k]}
+function line4(g,cam,pts,W,visible){let pen=false;g.beginPath();for(const P of pts){const q=(visible&&!visible(P))?null:pj4(cam,P,W);if(!q){pen=false;continue}if(pen)g.lineTo(q[0],q[1]);else{g.moveTo(q[0],q[1]);pen=true}}g.stroke()}
+function render4(){const {W,H,dpr}=fit(c4,1.4);const g=g4;g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,W,H);
+  const cam=cam4(P4.cam);const bg=g.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#04060c');bg.addColorStop(1,'#0b1020');g.fillStyle=bg;g.fillRect(0,0,W,H);
+  const mono=getComputedStyle(document.body).getPropertyValue('--mono');g.textAlign='center';g.textBaseline='middle';g.lineCap='round';
+  const r=P4.r/RE;const dirs=STARS.map(starDir4);
+  // stars at infinity (direction from camera)
+  g.font='500 '+(12*dpr)+'px '+mono;
+  STARS.forEach((s,i)=>{const d=dirs[i];const q=pj4(cam,[cam.c[0]+200*d[0],cam.c[1]+200*d[1],cam.c[2]+200*d[2]],W);if(!q)return;
+    g.fillStyle='rgba(255,255,255,0.95)';g.beginPath();g.arc(q[0],q[1],2.6*dpr,0,2*Math.PI);g.fill();g.fillStyle='rgba(232,235,244,0.75)';g.fillText(s.name,q[0],q[1]-11*dpr)});
+  // earth: filled silhouette from the tangency circle, then graticule and outline on the facing side
+  const cl=len(cam.c);const visible=P=>dot(P,cam.c)>1.0005;
+  if(cl>1.02){const ctr=[cam.c[0]/(cl*cl),cam.c[1]/(cl*cl),cam.c[2]/(cl*cl)];const rad=Math.sqrt(1-1/(cl*cl));const cn=norm(cam.c);const e1=norm(cross(Math.abs(cn[2])<0.9?[0,0,1]:[1,0,0],cn)),e2=cross(cn,e1);
+    g.beginPath();let first=true;for(let i=0;i<=96;i++){const a=i/96*2*Math.PI;const P=[ctr[0]+rad*(Math.cos(a)*e1[0]+Math.sin(a)*e2[0]),ctr[1]+rad*(Math.cos(a)*e1[1]+Math.sin(a)*e2[1]),ctr[2]+rad*(Math.cos(a)*e1[2]+Math.sin(a)*e2[2])];const q=pj4(cam,P,W);if(!q){first=true;continue}if(first){g.moveTo(q[0],q[1]);first=false}else g.lineTo(q[0],q[1])}
+    g.closePath();g.fillStyle='#0d1a33';g.fill();g.strokeStyle='rgba(140,170,230,0.6)';g.lineWidth=1.2*dpr;g.stroke()}
+  g.strokeStyle='rgba(120,150,210,0.22)';g.lineWidth=1*dpr;
+  for(let lat=-75;lat<=75;lat+=15){const pts=[];for(let i=0;i<=120;i++)pts.push(geo(lat,i*3));line4(g,cam,pts,W,visible)}
+  for(let lon=0;lon<360;lon+=15){const pts=[];for(let i=0;i<=60;i++)pts.push(geo(-90+i*3,lon));line4(g,cam,pts,W,visible)}
+  g.strokeStyle='rgba(200,215,245,0.55)';g.lineWidth=1.3*dpr;line4(g,cam,US,W,visible);
+  // earth's axis through the poles
+  if(P4.axis){g.strokeStyle='rgba(240,179,91,0.5)';g.setLineDash([4*dpr,4*dpr]);line4(g,cam,[[0,0,1],[0,0,1.6]],W,null);g.setLineDash([])}
+  // observers, spheres, rays
+  const physPts=OBS[0];
+  OBS.forEach((o,oi)=>{const col=o.col;
+    // sphere: horizon ring, altitude rings, two meridians; lower half faint
+    const ring=(alt,n)=>{const pts=[];for(let i=0;i<=n;i++){const az=i/n*2*Math.PI;pts.push([o.p[0]+r*(Math.cos(alt)*(Math.sin(az)*o.east[0]+Math.cos(az)*o.north[0])+Math.sin(alt)*o.up[0]),o.p[1]+r*(Math.cos(alt)*(Math.sin(az)*o.east[1]+Math.cos(az)*o.north[1])+Math.sin(alt)*o.up[1]),o.p[2]+r*(Math.cos(alt)*(Math.sin(az)*o.east[2]+Math.cos(az)*o.north[2])+Math.sin(alt)*o.up[2])])}return pts};
+    const merid=(az,a0,a1,n)=>{const pts=[];for(let i=0;i<=n;i++){const alt=a0+(a1-a0)*i/n;pts.push([o.p[0]+r*(Math.cos(alt)*(Math.sin(az)*o.east[0]+Math.cos(az)*o.north[0])+Math.sin(alt)*o.up[0]),o.p[1]+r*(Math.cos(alt)*(Math.sin(az)*o.east[1]+Math.cos(az)*o.north[1])+Math.sin(alt)*o.up[1]),o.p[2]+r*(Math.cos(alt)*(Math.sin(az)*o.east[2]+Math.cos(az)*o.north[2])+Math.sin(alt)*o.up[2])])}return pts};
+    g.lineWidth=1*dpr;g.strokeStyle='rgba('+col+',0.22)';g.setLineDash([3*dpr,5*dpr]);for(const a of [-30,-60])line4(g,cam,ring(a*D,72),W,null);for(const az of [0,90,180,270])line4(g,cam,merid(az*D,-Math.PI/2,0,24),W,null);g.setLineDash([]);
+    g.strokeStyle='rgba('+col+',0.55)';for(const a of [30,60])line4(g,cam,ring(a*D,72),W,null);for(const az of [0,90,180,270])line4(g,cam,merid(az*D,0,Math.PI/2,24),W,null);
+    g.lineWidth=1.6*dpr;g.strokeStyle='rgba('+col+',0.9)';line4(g,cam,ring(0,96),W,null);
+    if(P4.axis){const a0=[o.p[0]-r*0+0,o.p[1],o.p[2]];const n1=[o.p[0],o.p[1],o.p[2]+r],s1=[o.p[0],o.p[1],o.p[2]-r];g.strokeStyle='rgba(240,179,91,0.8)';g.lineWidth=1.2*dpr;line4(g,cam,[s1,n1],W,null);
+      g.font='500 '+(10*dpr)+'px '+mono;g.fillStyle='rgba(240,179,91,0.95)';const qn=pj4(cam,n1,W),qs=pj4(cam,s1,W);if(qn)g.fillText('NCP',qn[0],qn[1]-8*dpr);if(qs)g.fillText('SCP',qs[0],qs[1]+9*dpr)}
+    // observer marker
+    const q=pj4(cam,o.p,W);if(q){g.fillStyle='rgba('+col+',1)';g.beginPath();g.arc(q[0],q[1],3.5*dpr,0,2*Math.PI);g.fill();g.font='600 '+(12*dpr)+'px '+mono;g.fillText(o.name,q[0],q[1]+13*dpr)}
+    // stars on this sphere
+    STARS.forEach((s,i)=>{let d=dirs[i];
+      if(P4.phys&&oi===1){const alt0=dot(dirs[i],OBS[0].up);if(alt0<=0)return;const Q=[OBS[0].p[0]+r*dirs[i][0],OBS[0].p[1]+r*dirs[i][1],OBS[0].p[2]+r*dirs[i][2]];d=norm(sub(Q,o.p));
+        const alt=dot(d,o.up);if(alt<=0)return;const Qd=[o.p[0]+r*d[0],o.p[1]+r*d[1],o.p[2]+r*d[2]];
+        if(P4.rays){g.strokeStyle='rgba('+col+',0.8)';g.lineWidth=1*dpr;line4(g,cam,[o.p,Q],W,null)}
+        const qq=pj4(cam,Qd,W);if(qq){g.fillStyle='rgba('+col+',1)';g.beginPath();g.arc(qq[0],qq[1],3*dpr,0,2*Math.PI);g.fill()}return}
+      const alt=dot(d,o.up);if(alt<=0)return;const Q=[o.p[0]+r*d[0],o.p[1]+r*d[1],o.p[2]+r*d[2]];
+      if(P4.rays){g.strokeStyle='rgba('+col+',0.8)';g.lineWidth=1*dpr;line4(g,cam,[o.p,Q],W,null);g.strokeStyle='rgba('+col+',0.28)';g.setLineDash([2*dpr,6*dpr]);line4(g,cam,[Q,[o.p[0]+2.5*d[0],o.p[1]+2.5*d[1],o.p[2]+2.5*d[2]]],W,null);g.setLineDash([])}
+      const qq=pj4(cam,Q,W);if(qq){g.fillStyle='rgba('+col+',1)';g.beginPath();g.arc(qq[0],qq[1],3*dpr,0,2*Math.PI);g.fill();if(P4.phys&&oi===0){g.strokeStyle='rgba(255,255,255,0.9)';g.lineWidth=1*dpr;g.beginPath();g.arc(qq[0],qq[1],5*dpr,0,2*Math.PI);g.stroke()}}})});
+  // the two copies of each shared star, joined: always the baseline apart, whatever the radius
+  if(!P4.phys){g.strokeStyle='rgba(255,255,255,0.35)';g.lineWidth=1*dpr;g.setLineDash([2*dpr,4*dpr]);g.font='500 '+(10*dpr)+'px '+mono;g.fillStyle='rgba(232,235,244,0.7)';
+    STARS.forEach((s,i)=>{const d=dirs[i];if(dot(d,OBS[0].up)<=0||dot(d,OBS[1].up)<=0)return;const A=[OBS[0].p[0]+r*d[0],OBS[0].p[1]+r*d[1],OBS[0].p[2]+r*d[2]],B=[OBS[1].p[0]+r*d[0],OBS[1].p[1]+r*d[1],OBS[1].p[2]+r*d[2]];line4(g,cam,[A,B],W,null);
+      const qa=pj4(cam,A,W),qb=pj4(cam,B,W);if(qa&&qb&&Math.hypot(qa[0]-qb[0],qa[1]-qb[1])>60*dpr)g.fillText(s.name+' · '+Math.round(CHORD)+' km',(qa[0]+qb[0])/2,(qa[1]+qb[1])/2-7*dpr)});g.setLineDash([])}
+  // readouts
+  const pol=dirs[0];const altC=Math.asin(dot(pol,OBS[0].up))*R2D,altD=Math.asin(dot(pol,OBS[1].up))*R2D;
+  document.getElementById('r4r').textContent=Math.round(P4.r)+' km';document.getElementById('r4base').textContent=Math.round(CHORD)+' km';document.getElementById('r4half').textContent=Math.round(CHORD/2)+' km';
+  document.getElementById('r4pc').textContent=altC.toFixed(1)+'°';document.getElementById('r4pd').textContent=altD.toFixed(1)+'°';
+  const ph=document.getElementById('r4phys');ph.hidden=!P4.phys;if(P4.phys){const Q=[OBS[0].p[0]+r*pol[0],OBS[0].p[1]+r*pol[1],OBS[0].p[2]+r*pol[2]];const dd=norm(sub(Q,OBS[1].p));const a=Math.asin(dot(dd,OBS[1].up))*R2D;document.getElementById('r4pp').textContent=a.toFixed(1)+'° (actual '+altD.toFixed(1)+'°, error '+Math.abs(a-altD).toFixed(1)+'°)'}}
+const s4cam=bind('s4cam',P4,'cam',x=>Math.round(x*100)+'%','v4cam',0.01);
+const s4r=bind('s4r',P4,'r',x=>Math.round(x)+' km','v4r');
+const s4gst=bind('s4gst',P4,'gst',x=>x.toFixed(1)+' h','v4gst',0.01);
+document.getElementById('k4rays').addEventListener('change',e=>{P4.rays=e.target.checked});
+document.getElementById('k4axis').addEventListener('change',e=>{P4.axis=e.target.checked});
+document.getElementById('k4phys').addEventListener('change',e=>{P4.phys=e.target.checked});
+const b4spin=document.getElementById('b4spin');b4spin.addEventListener('click',()=>{P4.spin=!P4.spin;b4spin.classList.toggle('on',P4.spin)});
+function tween4(key,setter,to,secs){return new Promise(res=>{P4.tween={key,setter,from:P4[key],to,t:0,secs,res}})}
+async function runSeq(steps){P4.queue=steps;for(const st of steps){if(P4.queue!==steps)return;await st()}}
+const stepGod=()=>{P4.orbitAz=0;P4.orbitEl=0;s4r.set(130);return tween4('cam',s4cam.set,0,2.0)};
+const stepFly=()=>{P4.orbitAz=0;P4.orbitEl=0;return tween4('cam',s4cam.set,1,3.5)};
+const stepGrow=()=>tween4('r',s4r.set,2500,6);
+document.getElementById('b4god').addEventListener('click',()=>runSeq([stepGod]));
+document.getElementById('b4fly').addEventListener('click',()=>runSeq([stepFly]));
+document.getElementById('b4grow').addEventListener('click',()=>runSeq([stepGrow]));
+document.getElementById('b4all').addEventListener('click',()=>{s4cam.set(0);s4r.set(130);runSeq([()=>new Promise(r=>setTimeout(r,900)),stepFly,()=>new Promise(r=>setTimeout(r,600)),stepGrow])});
+(function(){let drag=null;c4.style.touchAction='none';c4.style.cursor='grab';
+  c4.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,az:P4.orbitAz,el:P4.orbitEl};c4.setPointerCapture(e.pointerId)});
+  c4.addEventListener('pointermove',e=>{if(!drag)return;P4.orbitAz=drag.az-(e.clientX-drag.x)*0.3;P4.orbitEl=clamp(drag.el+(e.clientY-drag.y)*0.3,-60,80)});
+  const end=()=>{drag=null};c4.addEventListener('pointerup',end);c4.addEventListener('pointercancel',end)})();
+
 /* ================= tabs, loop, resize ================= */
 let active='dome';
 const tabs=document.querySelectorAll('.tab');
 function showTab(name,push){active=name;tabs.forEach(t=>t.setAttribute('aria-selected',String(t.dataset.panel===name)));
-  for(const n of ['dome','fields','tenerife'])document.getElementById('panel-'+n).hidden=(n!==name);
-  if(name==='tenerife')scheduleRender3();else if(name==='fields')render2();else render1();
+  for(const n of ['dome','fields','tenerife','spheres'])document.getElementById('panel-'+n).hidden=(n!==name);
+  if(name==='tenerife')scheduleRender3();else if(name==='fields')render2();else if(name==='spheres')render4();else render1();
   if(push){try{history.replaceState(null,'','#'+name)}catch(e){}}}
 tabs.forEach(t=>t.addEventListener('click',()=>showTab(t.dataset.panel,true)));
-const h=(location.hash||'').replace('#','');if(['dome','fields','tenerife'].includes(h))showTab(h,false);else showTab('dome',false);
+const h=(location.hash||'').replace('#','');if(['dome','fields','tenerife','spheres'].includes(h))showTab(h,false);else showTab('dome',false);
 const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 if(reduce){P1.playing=false;P2.playing=false;b1play.textContent='Play';b2play.textContent='Play'}
 let last=performance.now();
@@ -423,6 +558,8 @@ function loop(now){const dt=Math.min(0.1,(now-last)/1000);last=now;
   else b1fly.textContent=P1.view<0.5?'Fly inside':'Fly outside';
   if(active==='dome'){if(P1.playing)P1.theta+=dt*0.5*P1.speed;render1()}
   else if(active==='fields'){if(P2.playing)P2.theta+=dt*0.25*P2.speed;render2()}
+  else if(active==='spheres'){if(P4.tween){const tw=P4.tween;tw.t+=dt;const u=Math.min(1,tw.t/tw.secs);const e=u*u*(3-2*u);tw.setter(tw.from+(tw.to-tw.from)*e);if(u>=1){P4.tween=null;tw.res()}}
+    if(P4.spin)s4gst.set((P4.gst+dt*0.08)%24);render4()}
   requestAnimationFrame(loop)}
 requestAnimationFrame(loop);
 window.addEventListener('resize',()=>{if(active==='tenerife')scheduleRender3()});
