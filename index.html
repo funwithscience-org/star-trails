@@ -64,6 +64,11 @@ input[type=range]{width:100%;accent-color:var(--accent);margin:0}
 .cap{font-family:var(--mono);font-size:12px;color:var(--muted)}
 .cap b{color:var(--fg);font-weight:600}
 .pair{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.refs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.refs figure{margin:0;min-width:0}
+.refs img{width:100%;max-width:100%;border-radius:6px;border:1px solid var(--line);display:block}
+.refs figcaption{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:4px;line-height:1.35}
+@media (max-width:820px){.refs{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .legend{display:flex;gap:16px;font-size:13px;color:var(--muted);flex-wrap:wrap}
 .legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px;background:currentColor}
 .legend .a{color:var(--fieldA)} .legend .b{color:var(--fieldB)} .legend .g{color:#e1ebff} .legend .i{color:var(--accent)}
@@ -243,10 +248,19 @@ footer{color:var(--muted);font-size:13px;max-width:78ch}
         <span>the <b class="swI">hot spots on the map</b> turn <b id="r5i">—</b></span>
         <span>camera <b id="r5cam">outside the dome</b></span>
       </div>
+      <div class="refs">
+        <figure><img src="ref/device-overview.jpg" alt="Lit-room view of the device: a clear acrylic dome over a printed flat-earth map on a table, a white egg-shaped star projector on a red box to the left outside the dome, telescopes on tripods behind."><figcaption><b>The device, lights on.</b> Clear dome over a printed map; the star projector is the white ball on the red box, outside the dome. (Hanvey, 13 Dec 2024, 5:05)</figcaption></figure>
+        <figure><img src="ref/device-mirror.jpg" alt="Close view through the dome wall: a horizontal mirror disk held by magnets near the top of the dome, with the projector and telescopes visible behind."><figcaption><b>The two-way mirror.</b> A horizontal disk held by magnets near the top, inside the dome. He calls it his "superfluid ceiling". (13 Dec 2024, 6:20)</figcaption></figure>
+        <figure><img src="ref/device-above.jpg" alt="The dome seen from directly above, its cap covered in projected star points, the phone visible reflected at the bottom."><figcaption><b>From above.</b> The cap carries the star field; a phone is reflected at the bottom edge. (13 Dec 2024, 9:15)</figcaption></figure>
+        <figure><img src="ref/projector-zoom.jpg" alt="Dark-room frame: a dark glossy dome with a bright star pattern on its cap and the glowing projector ball on the tray at the front edge."><figcaption><b>Dark room.</b> Same device; the glowing ball at the front edge is the projector. (12 Dec 2024, 0:38, brightened)</figcaption></figure>
+        <figure><img src="ref/dual-spiral-1.jpg" alt="Long exposure of the dome from a low camera: a large spiral of star trails across the cap and a smaller spiral lower in the dome, the room visible through the glass."><figcaption><b>"Southern part of the hemisphere with long exposure."</b> Two spirals: the large one on the cap, the small bright one lower in the dome. (12 Dec 2024, 5:32)</figcaption></figure>
+        <figure><img src="ref/dual-spiral-2.jpg" alt="Long exposure close on the dome: a tight bright spiral low on the front of the dome and a larger spiral on the cap behind it."><figcaption><b>Long exposure, close.</b> The small tight spiral is the ceiling field reflected in the mirror; the large one is the field on the glass. (12 Dec 2024, 7:50)</figcaption></figure>
+      </div>
       <div class="note">
         <span class="k">What the videos show</span>
         <p>His follow-up video (13 Dec 2024) shows the device with the lights on: a clear acrylic dome over a printed flat-earth map, a two-way mirror disk held by magnets near the top of the dome, and a pinhole star projector on a box beside the dome, outside it. One projector, one field. Its beams do four things, all traced here: go straight to the ceiling; pass through the side wall and light the cap from inside, a direct copy; hit the mirror and bounce back onto the cap, a mirrored copy, reversed; or bounce off the underside onto the map, the moving hot spot he points out. So the dome carries two bright copies of one field, one of them reversed. That is the "rotation, counter-rotation" he says you can already see with the lights on, and it is a plane mirror doing it.</p>
-        <p>The readout gives each copy's sense on screen. Switch the mirror off and the reversed copy and the hot spots vanish; the ceiling and the direct copy remain, turning one way. Everything he calls the anti-arc is on the mirror's side of that switch.</p>
+        <p>Why the copies mostly read as one field: the mirror is horizontal, and a horizontal mirror does not reverse a rotation about the vertical. The direct copy and the mirrored copy on the glass both sweep the same way round the same axis, so from the side they are one family of arcs, just more of them. The only thing that turns the other way is the ceiling field seen <em>in</em> the mirror: a pond reflection, visible only from a camera above the mirror plane looking down into the dome, which puts the camera on the opposite side of the rotation from where it sees the ceiling. The readout says "seen from below" or "seen from above" next to each sense for that reason. One rotation, viewed from both sides, reads as two. That is also exactly what a sphere does for the real sky: the north and south celestial poles are one rotation seen from its two sides.</p>
+        <p>Switch the mirror off and the mirrored copy, the pond image and the hot spots vanish; the ceiling and the direct copy remain, turning one way. Everything he calls the anti-arc is on the mirror's side of that switch.</p>
         <p>The projector carries a Dipper-shaped asterism so the mirrored copy can be checked by eye: the handle bends the other way. Orion photographed from Australia is Orion turned upside down, belt and sword in the same order as from Europe: a rotation, not a reflection. The southern sky also contains stars with no northern counterpart at all. A mirror cannot produce either.</p>
       </div>
       <div class="note steel">
@@ -667,16 +681,17 @@ function render5(){PR=[P5.px,0,P5.pz];const {W,H,dpr}=fit(c5,1.55);const g=g5;co
   if(P5.fres&&!P5.inside&&P5.ceil){for(const b of BEAMS){const pts=[];for(let k=K;k>=0;k--){const sp=trace(b,P5.theta-tr*k/K).find(x=>x.kind==='ceiling'&&!x.refl);pts.push(sp?reflPt(cam.c,sp.P):null)}
       for(let k=0;k<K;k++){if(!pts[k]||!pts[k+1])continue;const q0=proj(cam,pts[k],W,H),q1=proj(cam,pts[k+1],W,H);if(q0[2]>cull||q1[2]>cull)continue;const a=Math.min(1,3*gain*fresnel(dot(pts[k+1],norm(sub(cam.c,pts[k+1])))));g.strokeStyle='rgba('+COL.B+','+(a*0.6*(k+1)/K)+')';g.lineWidth=1.5*dpr;g.beginPath();g.moveTo(q0[0],q0[1]);g.lineTo(q1[0],q1[1]);g.stroke()}}}
   if(P5.beams){g.strokeStyle='rgba(240,179,91,0.12)';g.lineWidth=1*dpr;for(const b of BEAMS){let o=PR;for(const sp of trace(b,P5.theta)){poly(g,cam,[o,sp.P],W,H,cull);o=sp.P}}}
-  // apparent senses: sign of the projected area one spot sweeps over a full turn (y down: positive = clockwise on screen)
-  const sense=(getPt)=>{const pts=[];let n=0;for(let k=0;k<72;k++){const P=getPt(k/72*2*Math.PI);n++;if(!P)continue;const q=proj(cam,P,W,H);if(q[2]>cull)continue;pts.push(q)}
-    if(pts.length<6)return pts.length?'out of view':'—';let A=0;for(let k=0;k<pts.length;k++){const a=pts[k],b=pts[(k+1)%pts.length];A+=a[0]*b[1]-b[0]*a[1]}return A>0?'clockwise':'anticlockwise'};
-  P5._f=(P5._f||0)+1;if(P5._f%15!==1&&!P5._force)return;P5._force=false;
+  // apparent senses: the spot's sweep about the vertical axis (area in the horizontal plane), then which side the camera views it from.
+  // The same physical rotation reads one way from below and the other from above; that is the whole trick.
+  const sense=(getPt)=>{const pts=[];let n=0,zsum=0,zmin=1e9,zmax=-1e9;for(let k=0;k<72;k++){const P=getPt(k/72*2*Math.PI);n++;if(!P)continue;const q=proj(cam,P,W,H);if(q[2]>cull)continue;pts.push(P);zsum+=P[2];zmin=Math.min(zmin,P[2]);zmax=Math.max(zmax,P[2])}
+    if(pts.length<6)return pts.length?'out of view':'—';let A=0;for(let k=0;k+1<pts.length;k++){const a=Math.atan2(pts[k][1]-PR[1],pts[k][0]-PR[0]),b=Math.atan2(pts[k+1][1]-PR[1],pts[k+1][0]-PR[0]);let d=b-a;if(d>Math.PI)d-=2*Math.PI;if(d<-Math.PI)d+=2*Math.PI;if(Math.abs(d)<1)A+=d}
+    const above=cam.c[2]>zsum/pts.length;const edge=cam.c[2]>zmin-0.05&&cam.c[2]<zmax+0.05;const ccwFromAbove=A>0;const cw=above?!ccwFromAbove:ccwFromAbove;return edge?'edge-on, ambiguous':(cw?'clockwise':'anticlockwise')+(above?' (seen from above)':' (seen from below)')};
   const probeFor=(kind,refl,fn)=>{let best=null;for(const b of BEAMS){let c=0;for(let k=0;k<36;k++){const sp=trace(b,k/36*2*Math.PI).find(x=>x.kind===kind&&x.refl===refl);if(sp&&(!fn||fn(sp.P)))c++}if(!best||c>best.c)best={b,c}}return best&&best.c>=4?best.b:null};
   const senseOf=(kind,refl,on,fn)=>{if(!on)return 'hidden';const b=probeFor(kind,refl,fn);if(!b)return '—';return sense(th=>{const sp=trace(b,th).find(x=>x.kind===kind&&x.refl===refl);if(!sp)return null;return fn?fn(sp.P):sp.P})};
   document.getElementById('r5a').textContent=senseOf('ceiling',false,P5.ceil);
   document.getElementById('r5g').textContent=senseOf('glass',false,P5.glass);
   document.getElementById('r5b').textContent=senseOf('glass',true,P5.glass&&P5.mirror);
-  document.getElementById('r5m').textContent=P5.mirror&&P5.mref?(senseOf('ceiling',false,true,P=>mirrorImage(cam.c,P))):'hidden';
+  document.getElementById('r5m').textContent=P5.mirror&&P5.mref?(senseOf('ceiling',false,true,P=>mirrorImage(cam.c,P)?[P[0],P[1],2*P5.hm-P[2]]:null)):'hidden';
   document.getElementById('r5i').textContent=senseOf('map',true,P5.map&&P5.mirror);
   document.getElementById('r5cam').textContent=P5.inside?'inside the dome, under the mirror, looking up':'outside the dome'}
 const s5az=bind('s5az',P5,'az',x=>Math.round(((x%360)+360)%360)+'°','v5az',1,()=>{P5.inside=false});
