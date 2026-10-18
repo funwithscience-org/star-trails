@@ -245,6 +245,7 @@ footer{color:var(--muted);font-size:13px;max-width:78ch}
       <div class="note">
         <span class="k">What the video shows</span>
         <p>One pinhole star projector, one star field, a clear glass dome on a tray, a plain ceiling. The beams paint the field on the ceiling, turning one way around the point above the projector. The same beams light the glass where they pass through it, so the dome itself glows with a second copy of the field. And the dome is a curved mirror, so a camera outside also sees the ceiling reflected in its near surface: a third copy, small and bright, and reversed, because a reflection reverses handedness. His long exposures show exactly this pair on the dome: a large spiral across the cap and a small tight one low on the front. Press <b>His long exposure</b>.</p>
+        <p>From most places in the room you see one thing: the glowing dome. The reflection is a Fresnel reflection off glass, about 4% at face-on incidence, so at his tripod it is barely there; it comes up only close and low, where the glancing angle raises the reflectance, and in a long exposure, where faint things accumulate. The ceiling field is in a phone's frame only when the phone tilts up. The controls reproduce all of this: tripod view, one field; tilt up, the ceiling; close, low and long, the "anti-arc".</p>
         <p>There is one physical rotation in the room. What turns which way on screen depends on where the camera stands, and the readout says so live: the reflection always runs against the ceiling, and the pattern on the glass, a tilted loop seen through a curved surface, can read either way as the camera moves. That is the "lens effect", and it is why "it follows no matter where you go". Step inside the dome and there is one field, turning one way, and no reflection of the ceiling at all.</p>
         <p>The projector carries a Dipper-shaped asterism so the mirror copy can be checked by eye: in the reflection the handle bends the other way. Orion photographed from Australia is Orion turned upside down, belt and sword in the same order as from Europe: a rotation, not a reflection. The southern sky also contains stars with no northern counterpart at all. A mirror cannot produce either.</p>
       </div>
@@ -255,13 +256,14 @@ footer{color:var(--muted);font-size:13px;max-width:78ch}
     </div>
     <aside class="controls">
       <h2>Projector, ceiling, dome</h2>
-      <div class="btns"><button class="btn small" id="b5his">His tripod</button><button class="btn small" id="b5le">His long exposure</button><button class="btn small" id="b5above">From above</button><button class="btn small" id="b5low">Low, close</button><button class="btn small" id="b5inside">Inside the dome</button></div>
+      <div class="btns"><button class="btn small" id="b5his">His tripod</button><button class="btn small" id="b5ceil">Tilt up to the ceiling</button><button class="btn small" id="b5le">His long exposure</button><button class="btn small" id="b5above">From above</button><button class="btn small" id="b5low">Low, close</button><button class="btn small" id="b5inside">Inside the dome</button></div>
       <div class="ctl"><div class="row"><label for="s5px">Projector position</label><span class="val" id="v5px">0.85 R (inside)</span></div><input type="range" id="s5px" min="0" max="140" value="85"></div>
       <div class="ctl"><div class="row"><label for="s5az">Orbit</label><span class="val" id="v5az">35°</span></div><input type="range" id="s5az" min="0" max="360" value="35"></div>
       <div class="ctl"><div class="row"><label for="s5el">Camera height</label><span class="val" id="v5el">12°</span></div><input type="range" id="s5el" min="2" max="88" value="8"></div>
-      <div class="ctl"><div class="row"><label for="s5dist">Distance</label><span class="val" id="v5dist">4.0 R</span></div><input type="range" id="s5dist" min="18" max="90" value="32"></div>
+      <div class="ctl"><div class="row"><label for="s5dist">Distance</label><span class="val" id="v5dist">3.2 R</span></div><input type="range" id="s5dist" min="18" max="90" value="32"></div>
+      <div class="ctl"><div class="row"><label for="s5tilt">Phone tilt (up)</label><span class="val" id="v5tilt">0°</span></div><input type="range" id="s5tilt" min="-20" max="80" value="0"></div>
       <div class="ctl"><div class="row"><label for="s5speed">Projector spin</label><span class="val" id="v5speed">1.0×</span></div><input type="range" id="s5speed" min="0" max="30" value="10"></div>
-      <div class="ctl"><div class="row"><label for="s5trail">Exposure (trail)</label><span class="val" id="v5trail">20°</span></div><input type="range" id="s5trail" min="0" max="120" value="20"></div>
+      <div class="ctl"><div class="row"><label for="s5trail">Exposure (trail and gain)</label><span class="val" id="v5trail">20°</span></div><input type="range" id="s5trail" min="0" max="120" value="20"></div>
       <div class="btns"><button class="btn" id="b5play">Pause</button></div>
       <label class="check"><input type="checkbox" id="k5ceil" checked> Star field on the ceiling</label>
       <label class="check"><input type="checkbox" id="k5glass" checked> Beam pattern where it crosses the glass</label>
@@ -270,7 +272,7 @@ footer{color:var(--muted);font-size:13px;max-width:78ch}
       <label class="check"><input type="checkbox" id="k5beams"> Show projector beams</label>
       <hr>
       <div class="legend"><span class="a">Ceiling</span><span class="g">On the glass</span><span class="b">Near-surface reflection</span><span class="i">Far-wall reflection</span></div>
-      <p class="cap">Geometry as filmed: projector on the tray near the dome rim (the glass is clear, so inside or just outside cannot be told from the video; the slider covers both and the optics are the same), plain ceiling about four dome-radii up, dome treated as a spherical mirror. Reflection points are solved per star by the law of reflection, not drawn by hand. Refraction through the thin glass is neglected. You can drag on the picture to orbit.</p>
+      <p class="cap">Geometry as filmed: projector on the tray inside the dome rim (the closed rings on the cap in his long exposures put its spin axis inside the dome footprint; the slider also covers outside, where the rings open into arcs), plain ceiling about four dome-radii up, dome treated as a spherical glass mirror with Fresnel reflectance. Reflection points are solved per star by the law of reflection, not drawn by hand. Refraction through the thin glass is neglected. Phone field of view 72°. You can drag on the picture to orbit.</p>
     </aside>
   </section>
 
@@ -586,7 +588,8 @@ document.getElementById('b4all').addEventListener('click',()=>{s4cam.set(0);s4r.
 
 /* ================= PANEL 5 (tab 4): the mirror dome ================= */
 const c5=document.getElementById('c5'),g5=c5.getContext('2d');
-const P5={az:35,el:8,dist:3.2,speed:1,trail:20,theta:0,playing:true,refl:true,inner:true,glass:true,ceil:true,beams:false,inside:false,px:0.85};
+const P5={az:35,el:8,dist:3.2,tilt:0,speed:1,trail:20,theta:0,playing:true,refl:true,inner:true,glass:true,ceil:true,beams:false,inside:false,px:0.85};
+const fresnel=c=>0.04+0.96*Math.pow(1-clamp(c,0,1),5);
 const HC=4.0,BASE_R=1.7;let PR=[0.85,0,0.12];
 const COLG='225,235,255',COLI='240,179,91';
 // projector beams: a Dipper-shaped asterism plus random pinholes, as (az, el) in the projector's frame
@@ -599,8 +602,10 @@ function innerPt(C,P){let S=norm([-(C[0]+P[0]),-(C[1]+P[1]),-(C[2]+P[2])]);for(l
 function reflPt(C,P){let S=norm([C[0]+P[0],C[1]+P[1],C[2]+P[2]]);for(let i=0;i<40;i++){const u=norm(sub(C,S)),v=norm(sub(P,S));const n=norm([u[0]+v[0],u[1]+v[1],u[2]+v[2]]);S=norm([S[0]+0.6*(n[0]-S[0]),S[1]+0.6*(n[1]-S[1]),S[2]+0.6*(n[2]-S[2])])}
   if(S[2]<0.02)return null;if(dot(S,sub(C,S))<=0||dot(S,sub(P,S))<=0)return null;return S}
 function cam5(){if(P5.inside){const c=[0,0,0.1],t=[0,0,1.1];const f=[0,0,1];const u=[1,0,0];const r=norm(cross(f,u));const up=cross(r,f);return {c,f,r,up,half:85*D}}
-  const ca=Math.cos(P5.az*D),sa=Math.sin(P5.az*D),ce=Math.cos(P5.el*D),se=Math.sin(P5.el*D);const c=[P5.dist*ce*ca,P5.dist*ce*sa,Math.max(0.15,P5.dist*se)];const t=[0,0,0.5+0.9*Math.max(0,1-P5.el/60)];
-  const f=norm(sub(t,c));let r=cross(f,[0,0,1]);if(len(r)<1e-4)r=cross(f,[1,0,0]);r=norm(r);const up=cross(r,f);return {c,f,r,up,half:46*D}}
+  const ca=Math.cos(P5.az*D),sa=Math.sin(P5.az*D),ce=Math.cos(P5.el*D),se=Math.sin(P5.el*D);const c=[P5.dist*ce*ca,P5.dist*ce*sa,Math.max(0.15,P5.dist*se)];const t=[0,0,0.55];
+  let f=norm(sub(t,c));let r=cross(f,[0,0,1]);if(len(r)<1e-4)r=cross(f,[1,0,0]);r=norm(r);
+  // tilt the phone up about its own horizontal axis
+  const ct=Math.cos(P5.tilt*D),st=Math.sin(P5.tilt*D);const u0=cross(r,f);f=norm([f[0]*ct+u0[0]*st,f[1]*ct+u0[1]*st,f[2]*ct+u0[2]*st]);const up=cross(r,f);return {c,f,r,up,half:36*D}}
 function render5(){PR=[P5.px,0,0.12];const {W,H,dpr}=fit(c5,1.55);const g=g5;const cam=cam5();const cull=cam.half*1.25;g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,W,H);
   const bg=g.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#05070e');bg.addColorStop(1,'#0b1020');g.fillStyle=bg;g.fillRect(0,0,W,H);
   const mono=getComputedStyle(document.body).getPropertyValue('--mono');g.lineCap='round';g.textAlign='center';g.textBaseline='middle';
@@ -620,9 +625,14 @@ function render5(){PR=[P5.px,0,0.12];const {W,H,dpr}=fit(c5,1.55);const g=g5;con
   for(const b of BEAMS){const cp=[],rp=[],ip=[],gp=[];for(let k=K;k>=0;k--){const th=P5.theta-tr*k/K;const P=ceilingPt(b,th);cp.push(P);rp.push((showRefl&&P)?reflPt(cam.c,P):null);ip.push((showInner&&P)?innerPt(cam.c,P):null);gp.push(P5.glass?glassPt(b,th):null)}
     const sz=(b.dip?3.4:2.4)*dpr;
     if(P5.beams&&cp[K]){g.strokeStyle='rgba('+COL.A+',0.12)';g.lineWidth=1*dpr;poly(g,cam,[PR,cp[K]],W,H,cull)}
-    const drawTrail=(pts,col,s)=>{for(let k=0;k<K;k++){if(!pts[k]||!pts[k+1])continue;const q0=proj(cam,pts[k],W,H),q1=proj(cam,pts[k+1],W,H);if(q0[2]>cull||q1[2]>cull)continue;g.strokeStyle='rgba('+col+','+(0.7*(k+1)/K)+')';g.lineWidth=s*0.8;g.beginPath();g.moveTo(q0[0],q0[1]);g.lineTo(q1[0],q1[1]);g.stroke()}
-      const h=pts[K];if(!h)return;const q=proj(cam,h,W,H);if(q[2]>cull)return;g.fillStyle='rgba('+col+',1)';g.beginPath();g.arc(q[0],q[1],s*0.55,0,2*Math.PI);g.fill()};
-    if(P5.glass)drawTrail(gp,COLG,sz*0.7);if(showInner)drawTrail(ip,COLI,sz*0.7);if(showRefl)drawTrail(rp,COL.B,sz*0.8);if(P5.ceil)drawTrail(cp,COL.A,sz)}
+    const drawTrail=(pts,col,s,alphaOf)=>{for(let k=0;k<K;k++){if(!pts[k]||!pts[k+1])continue;const q0=proj(cam,pts[k],W,H),q1=proj(cam,pts[k+1],W,H);if(q0[2]>cull||q1[2]>cull)continue;const a=alphaOf(pts[k+1]);if(a<0.02)continue;g.strokeStyle='rgba('+col+','+(a*0.85*(k+1)/K)+')';g.lineWidth=s*0.8;g.beginPath();g.moveTo(q0[0],q0[1]);g.lineTo(q1[0],q1[1]);g.stroke()}
+      const h=pts[K];if(!h)return;const q=proj(cam,h,W,H);if(q[2]>cull)return;const a=alphaOf(h);if(a<0.02)return;g.fillStyle='rgba('+col+','+a+')';g.beginPath();g.arc(q[0],q[1],s*0.55,0,2*Math.PI);g.fill()};
+    // brightness: exposure gain lifts faint components; the glass is lit directly, the ceiling is far and dim, reflections carry only the Fresnel fraction
+    const gain=1+P5.trail/30;
+    const aGlass=()=>Math.min(1,0.9*gain),aCeil=()=>Math.min(1,0.35*gain);
+    const aRefl=S=>Math.min(1,3*gain*fresnel(dot(S,norm(sub(cam.c,S)))));
+    const aInner=S=>Math.min(1,3*gain*fresnel(-dot(S,norm(sub(cam.c,S)))));
+    if(P5.glass)drawTrail(gp,COLG,sz*0.7,aGlass);if(showInner)drawTrail(ip,COLI,sz*0.7,aInner);if(showRefl)drawTrail(rp,COL.B,sz*0.8,aRefl);if(P5.ceil)drawTrail(cp,COL.A,sz,aCeil)}
   // rotation centre on the ceiling and its reflection
   const CTR=[PR[0],PR[1],HC];{const q=proj(cam,CTR,W,H);if(q[2]<=cull){g.strokeStyle='rgba('+COL.A+',0.8)';g.lineWidth=1*dpr;g.beginPath();g.arc(q[0],q[1],6*dpr,0,2*Math.PI);g.stroke()}
     if(showRefl){const S=reflPt(cam.c,CTR);if(S){const q2=proj(cam,S,W,H);if(q2[2]<=cull){g.strokeStyle='rgba('+COL.B+',0.8)';g.beginPath();g.arc(q2[0],q2[1],6*dpr,0,2*Math.PI);g.stroke()}}}}
@@ -640,11 +650,13 @@ const s5az=bind('s5az',P5,'az',x=>Math.round(((x%360)+360)%360)+'°','v5az',1,()
 const s5el=bind('s5el',P5,'el',x=>Math.round(x)+'°','v5el',1,()=>{P5.inside=false});
 const s5dist=bind('s5dist',P5,'dist',x=>x.toFixed(1)+' R','v5dist',0.1,()=>{P5.inside=false});
 bind('s5speed',P5,'speed',x=>x.toFixed(1)+'×','v5speed',0.1);bind('s5trail',P5,'trail',x=>x+'°','v5trail');
-const setCam5=(az,el,dist)=>{P5.inside=false;s5az.set(az);s5el.set(el);s5dist.set(dist)};
+const s5tilt=bind('s5tilt',P5,'tilt',x=>Math.round(x)+'°','v5tilt',1,()=>{P5.inside=false});
+const setCam5=(az,el,dist,tilt)=>{P5.inside=false;s5az.set(az);s5el.set(el);s5dist.set(dist);s5tilt.set(tilt||0)};
 const setTrail5=v=>{const e=document.getElementById('s5trail');e.value=v;e.dispatchEvent(new Event('input'))};
-document.getElementById('b5his').addEventListener('click',()=>{setCam5(35,8,3.2);setTrail5(20)});
-document.getElementById('b5above').addEventListener('click',()=>setCam5(35,80,4.5));
-document.getElementById('b5low').addEventListener('click',()=>setCam5(60,6,2.2));
+document.getElementById('b5his').addEventListener('click',()=>{setCam5(35,8,3.2,0);setTrail5(20)});
+document.getElementById('b5ceil').addEventListener('click',()=>{setCam5(35,8,3.2,55);setTrail5(20)});
+document.getElementById('b5above').addEventListener('click',()=>setCam5(35,80,4.5,0));
+document.getElementById('b5low').addEventListener('click',()=>setCam5(60,6,2.2,8));
 document.getElementById('b5inside').addEventListener('click',()=>{P5.inside=true});
 const b5play=document.getElementById('b5play');b5play.addEventListener('click',()=>{P5.playing=!P5.playing;b5play.textContent=P5.playing?'Pause':'Play'});
 document.getElementById('k5refl').addEventListener('change',e=>{P5.refl=e.target.checked});
@@ -652,7 +664,7 @@ document.getElementById('k5inner').addEventListener('change',e=>{P5.inner=e.targ
 document.getElementById('k5glass').addEventListener('change',e=>{P5.glass=e.target.checked});
 document.getElementById('k5ceil').addEventListener('change',e=>{P5.ceil=e.target.checked});
 bind('s5px',P5,'px',x=>x.toFixed(2)+' R'+(x<1?' (inside)':' (outside)'),'v5px',0.01);
-document.getElementById('b5le').addEventListener('click',()=>{setCam5(20,5,1.9);document.getElementById('s5trail').value=120;document.getElementById('s5trail').dispatchEvent(new Event('input'))});
+document.getElementById('b5le').addEventListener('click',()=>{setCam5(20,5,1.9,12);setTrail5(120)});
 document.getElementById('k5beams').addEventListener('change',e=>{P5.beams=e.target.checked});
 (function(){let drag=null;c5.style.touchAction='none';c5.style.cursor='grab';
   c5.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,az:P5.az,el:P5.el};c5.setPointerCapture(e.pointerId)});
