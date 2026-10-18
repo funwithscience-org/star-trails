@@ -275,7 +275,7 @@ footer{color:var(--muted);font-size:13px;max-width:78ch}
     </div>
     <aside class="controls">
       <h2>Projector, mirror, dome</h2>
-      <div class="btns"><button class="btn small" id="b5his">His tripod (13 Dec)</button><button class="btn small" id="b5close">His close-up (12 Dec)</button><button class="btn small" id="b5ceil">Tilt up to the ceiling</button><button class="btn small" id="b5le">His long exposure (12 Dec)</button><button class="btn small" id="b5above">From above</button><button class="btn small" id="b5low">Low, close</button><button class="btn small" id="b5inside">Inside, under the mirror</button></div>
+      <div class="btns"><button class="btn small" id="b5his">His tripod (13 Dec)</button><button class="btn small" id="b5close">His close-up (12 Dec)</button><button class="btn small" id="b5ceil">Tilt up to the ceiling</button><button class="btn small" id="b5le">His long exposure (12 Dec)</button><button class="btn small" id="b5above">From above</button><button class="btn small" id="b5low">Low, close</button><button class="btn small" id="b5inside">Inside, under the mirror</button><button class="btn small" id="b5side">Light paths, side view</button></div>
       <label class="check"><input type="checkbox" id="k5mirror" checked> Two-way mirror in place</label>
       <div class="ctl"><div class="row"><label for="s5hm">Mirror height</label><span class="val" id="v5hm">0.72 R</span></div><input type="range" id="s5hm" min="20" max="95" value="72"></div>
       <div class="ctl"><div class="row"><label for="s5rm">Mirror radius</label><span class="val" id="v5rm">0.55 R</span></div><input type="range" id="s5rm" min="15" max="95" value="55"></div>
@@ -294,7 +294,10 @@ footer{color:var(--muted);font-size:13px;max-width:78ch}
       <label class="check"><input type="checkbox" id="k5map" checked> Hot spots on the map</label>
       <label class="check"><input type="checkbox" id="k5mref" checked> Spots seen reflected in the mirror</label>
       <label class="check"><input type="checkbox" id="k5fres"> Ceiling reflected in the outer surface (Fresnel, faint)</label>
-      <label class="check"><input type="checkbox" id="k5beams"> Show beam paths</label>
+      <label class="check"><input type="checkbox" id="k5paths"> Light paths, colour changing at every surface</label>
+      <label class="check"><input type="checkbox" id="k5plane"> Only beams in the projector–dome plane</label>
+      <label class="check"><input type="checkbox" id="k5beams"> Faint beam fan (all beams)</label>
+      <div class="legend" id="pathlegend"><span style="color:#f0b35b">from projector</span><span style="color:#e1ebff">after 1 surface</span><span style="color:#ff8f9c">after 2</span><span style="color:#78dcff">after 3</span><span style="color:#c8a0ff">after 4</span></div>
       <hr>
       <div class="legend"><span class="a">Ceiling</span><span class="g">On the glass, near wall</span><span class="f">On the glass, far wall</span><span class="b">Via the mirror (reversed)</span><span class="i">Map hot spots</span></div>
       <p class="cap">Geometry from the lit-room shots of 13 Dec and the dark frames of 12 Dec. Beams are traced through glass entry and exit (refraction neglected), mirror reflection and transmission (two-way, 50% reflect, 35% transmit), ceiling and map. Looking through the mirror dims what is behind it. Phone field of view 72°. You can drag on the picture to orbit.</p>
@@ -614,7 +617,8 @@ document.getElementById('b4all').addEventListener('click',()=>{s4cam.set(0);s4r.
 /* ================= PANEL 5 (tab 4): the mirror dome ================= */
 const c5=document.getElementById('c5'),g5=c5.getContext('2d');
 const P5={az:35,el:8,dist:3.2,tilt:0,speed:1,trail:20,theta:0,playing:true,inside:false,
-  px:1.6,pz:0.62,hm:0.72,rm:0.55,mirror:true,mref:true,ceil:true,glass:true,map:true,fres:false,beams:false,T:0.35};
+  px:1.6,pz:0.62,hm:0.72,rm:0.55,mirror:true,mref:true,ceil:true,glass:true,map:true,fres:false,beams:false,paths:false,plane:false,T:0.35};
+const PATHCOL=['240,179,91','225,235,255','255,143,156','120,220,255','200,160,255','255,220,120'];
 const HC=4.0,BASE_R=1.7;let PR=[1.6,0,0.62];
 const COLG='225,235,255',COLI='240,179,91';
 const fresnel=c=>0.04+0.96*Math.pow(1-clamp(c,0,1),5);
@@ -637,6 +641,18 @@ function trace(b,theta){const a=b.az+theta;const d0=[Math.cos(b.el)*Math.cos(a),
       if(best.k==='ceiling'){if(Math.hypot(P[0],P[1])<7)out.push({P,kind:'ceiling',w,refl});return}
       if(best.k==='map'){if(Math.hypot(P[0],P[1])<BASE_R)out.push({P,kind:'map',w,refl});return}}};
   run(PR,d0,1,false,0);return out}
+// full light paths: every segment, numbered by how many surfaces the light has met so far (glass crossing or mirror)
+function tracePaths(b,theta){const a=b.az+theta;const d0=[Math.cos(b.el)*Math.cos(a),Math.cos(b.el)*Math.sin(a),Math.sin(b.el)];const segs=[];
+  const run=(o,d,w,n,depth,dashed)=>{for(let step=0;step<6;step++){let best=null;
+      const B=dot(o,d),Cc=dot(o,o)-1,disc=B*B-Cc;if(disc>0){const r=Math.sqrt(disc);for(const t of [-B-r,-B+r]){if(t>1e-5){const P=[o[0]+t*d[0],o[1]+t*d[1],o[2]+t*d[2]];if(P[2]>=0&&(!best||t<best.t))best={t,P,k:'glass'}}}}
+      if(P5.mirror&&Math.abs(d[2])>1e-9){const t=(P5.hm-o[2])/d[2];if(t>1e-5){const P=[o[0]+t*d[0],o[1]+t*d[1],P5.hm];if(Math.hypot(P[0],P[1])<=P5.rm&&(!best||t<best.t))best={t,P,k:'mirror'}}}
+      if(d[2]>0){const t=(HC-o[2])/d[2];if(t>1e-5&&(!best||t<best.t))best={t,P:[o[0]+t*d[0],o[1]+t*d[1],HC],k:'ceiling'}}
+      if(d[2]<0){const t=(0-o[2])/d[2];if(t>1e-5&&(!best||t<best.t))best={t,P:[o[0]+t*d[0],o[1]+t*d[1],0],k:'map'}}
+      if(!best)return;const P=best.P;segs.push({from:o,to:P,n,w,dashed,end:best.k});
+      if(best.k==='glass'){o=P;w*=0.92;n++;continue}
+      if(best.k==='mirror'){if(depth<1)run(P,d,w*P5.T,n+1,depth+1,true);d=[d[0],d[1],-d[2]];w*=0.5;n++;o=P;continue}
+      return}};
+  run(PR,d0,1,0,0,false);return segs}
 function reflPt(C,P){let S=norm([C[0]+P[0],C[1]+P[1],C[2]+P[2]]);for(let i=0;i<40;i++){const u=norm(sub(C,S)),v=norm(sub(P,S));const n=norm([u[0]+v[0],u[1]+v[1],u[2]+v[2]]);S=norm([S[0]+0.6*(n[0]-S[0]),S[1]+0.6*(n[1]-S[1]),S[2]+0.6*(n[2]-S[2])])}
   if(S[2]<0.02)return null;if(dot(S,sub(C,S))<=0||dot(S,sub(P,S))<=0)return null;return S}
 function cam5(){if(P5.inside){const c=[0,0,0.1],t=[0,0,1.1];const f=[0,0,1];const u=[1,0,0];const r=norm(cross(f,u));const up=cross(r,f);return {c,f,r,up,half:85*D}}
@@ -686,7 +702,10 @@ function render5(){PR=[P5.px,0,P5.pz];const {W,H,dpr}=fit(c5,1.55);const g=g5;co
   // optional: the ceiling field reflected in the dome's outer surface toward the camera (Fresnel-weak)
   if(P5.fres&&!P5.inside&&P5.ceil){for(const b of BEAMS){const pts=[];for(let k=K;k>=0;k--){const sp=trace(b,P5.theta-tr*k/K).find(x=>x.kind==='ceiling'&&!x.refl);pts.push(sp?reflPt(cam.c,sp.P):null)}
       for(let k=0;k<K;k++){if(!pts[k]||!pts[k+1])continue;const q0=proj(cam,pts[k],W,H),q1=proj(cam,pts[k+1],W,H);if(q0[2]>cull||q1[2]>cull)continue;const a=Math.min(1,3*gain*fresnel(dot(pts[k+1],norm(sub(cam.c,pts[k+1])))));g.strokeStyle='rgba('+COL.B+','+(a*0.6*(k+1)/K)+')';g.lineWidth=1.5*dpr;g.beginPath();g.moveTo(q0[0],q0[1]);g.lineTo(q1[0],q1[1]);g.stroke()}}}
-  if(P5.beams){g.strokeStyle='rgba(240,179,91,0.12)';g.lineWidth=1*dpr;for(const b of BEAMS){let o=PR;for(const sp of trace(b,P5.theta)){poly(g,cam,[o,sp.P],W,H,cull);o=sp.P}}}
+  if(P5.paths){const sel=BEAMS.filter((b,i)=>{if(P5.plane){const a=((b.az+P5.theta)%(2*Math.PI)+2*Math.PI)%(2*Math.PI);const inPlane=Math.min(Math.abs(a-Math.PI),Math.abs(a),Math.abs(a-2*Math.PI))<10*D;return inPlane}return i%5===0});
+    for(const b of sel){for(const sg of tracePaths(b,P5.theta)){const col=PATHCOL[Math.min(sg.n,PATHCOL.length-1)];const a=Math.min(1,0.9*sg.w)*(sg.dashed?0.6:1);g.strokeStyle='rgba('+col+','+a+')';g.lineWidth=(sg.dashed?1:1.6)*dpr;if(sg.dashed)g.setLineDash([3*dpr,4*dpr]);poly(g,cam,[sg.from,sg.to],W,H,cull);g.setLineDash([]);
+        if(sg.end==='mirror'||sg.end==='glass'){const q=proj(cam,sg.to,W,H);if(q[2]<=cull){g.fillStyle='rgba('+PATHCOL[Math.min(sg.n+1,PATHCOL.length-1)]+',1)';g.beginPath();g.arc(q[0],q[1],2.2*dpr,0,2*Math.PI);g.fill()}}}}}
+  else if(P5.beams){g.strokeStyle='rgba(240,179,91,0.12)';g.lineWidth=1*dpr;for(const b of BEAMS){let o=PR;for(const sp of trace(b,P5.theta)){poly(g,cam,[o,sp.P],W,H,cull);o=sp.P}}}
   // apparent senses: the spot's sweep about the vertical axis (area in the horizontal plane), then which side the camera views it from.
   // The same physical rotation reads one way from below and the other from above; that is the whole trick.
   const sense=(getPt)=>{const pts=[];let n=0,zsum=0,zmin=1e9,zmax=-1e9;for(let k=0;k<72;k++){const P=getPt(k/72*2*Math.PI);n++;if(!P)continue;const q=proj(cam,P,W,H);if(q[2]>cull)continue;P.k=k;pts.push(P);zsum+=P[2];zmin=Math.min(zmin,P[2]);zmax=Math.max(zmax,P[2])}
@@ -722,8 +741,9 @@ document.getElementById('b5le').addEventListener('click',()=>{setRig5(0.45,0.6,1
 document.getElementById('b5above').addEventListener('click',()=>{setCam5(35,80,3.0,0);setTrail5(20)});
 document.getElementById('b5low').addEventListener('click',()=>{setCam5(60,6,2.2,8);setTrail5(20)});
 document.getElementById('b5inside').addEventListener('click',()=>{P5.inside=true;P5._force=true});
+document.getElementById('b5side').addEventListener('click',()=>{setCam5(90,6,3.4,14);setTrail5(0);for(const [id,v] of [['k5paths',true],['k5plane',true]]){const e=document.getElementById(id);e.checked=v;e.dispatchEvent(new Event('change'))}});
 const b5play=document.getElementById('b5play');b5play.addEventListener('click',()=>{P5.playing=!P5.playing;b5play.textContent=P5.playing?'Pause':'Play'});
-for(const [id,key] of [['k5mirror','mirror'],['k5mref','mref'],['k5ceil','ceil'],['k5glass','glass'],['k5map','map'],['k5fres','fres'],['k5beams','beams']])document.getElementById(id).addEventListener('change',e=>{P5[key]=e.target.checked});
+for(const [id,key] of [['k5mirror','mirror'],['k5mref','mref'],['k5paths','paths'],['k5plane','plane'],['k5ceil','ceil'],['k5glass','glass'],['k5map','map'],['k5fres','fres'],['k5beams','beams']])document.getElementById(id).addEventListener('change',e=>{P5[key]=e.target.checked});
 (function(){let drag=null;c5.style.touchAction='none';c5.style.cursor='grab';
   c5.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,az:P5.az,el:P5.el};c5.setPointerCapture(e.pointerId)});
   c5.addEventListener('pointermove',e=>{if(!drag)return;P5.inside=false;const k=0.4;s5az.set(((drag.az-(e.clientX-drag.x)*k)%360+360)%360);s5el.set(clamp(drag.el+(e.clientY-drag.y)*k,2,88))});
