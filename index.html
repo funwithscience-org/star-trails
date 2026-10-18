@@ -256,8 +256,8 @@ footer{color:var(--muted);font-size:13px;max-width:78ch}
         <button class="btn small" data-shot="open">0 · Opening frame (12 Dec 0:00)</button>
         <button class="btn small" data-shot="lit">1 · Lights on (13 Dec 5:02)</button>
         <button class="btn small" data-shot="above">2 · From above (13 Dec 9:09)</button>
-        <button class="btn small" data-shot="seam">3 · Close-up, the seam (12 Dec 3:08)</button>
-        <button class="btn small" data-shot="follow">4 · "Follows where you go" (12 Dec 4:03)</button>
+        <button class="btn small" data-shot="seam">3 · Bright A, walking in (12 Dec 2:47)</button>
+        <button class="btn small" data-shot="follow">4 · Bright B, "follows where you go" (12 Dec 4:03)</button>
         <button class="btn small" data-shot="crop">5 · His "Equatorial" crop (12 Dec 6:21)</button>
         <button class="btn small" data-shot="under">6 · Under the mirror (13 Dec 6:58)</button>
       </div>
@@ -267,6 +267,7 @@ footer{color:var(--muted);font-size:13px;max-width:78ch}
       </div>
       <canvas id="c5" aria-label="3D reconstruction of a star projector beside a clear dome with a two-way mirror inside, its beams traced to the ceiling, the glass and the map"></canvas>
       <div class="readout">
+        <span>curl of the group in view, fitted on screen: <b class="swB">glass</b> / <b class="swB">mirror</b> <b id="r5curl">—</b></span>
         <span>at the seam, the <b class="swB">cap reflection</b> sweeps <b id="r5s1">—</b>, the <b class="swB">mirror reflection</b> sweeps <b id="r5s2">—</b></span>
         <span>on screen, the <b class="swA">ceiling field</b> turns <b id="r5a">—</b></span>
         <span>the <b class="swG">direct copy on the glass</b> turns <b id="r5g">—</b></span>
@@ -300,7 +301,7 @@ footer{color:var(--muted);font-size:13px;max-width:78ch}
       </div>
       <div class="note">
         <span class="k">Where tab 1 lives in his rig</span>
-        <p>Tab 1's trick is one rotation seen from two sides. In his rig the two sides are the ceiling itself, which you see from below, and any reflection of it, which you see from above. Press <b>6 · Under the mirror</b>: the ceiling field is in the top of the frame in blue, its reflection in the dome's cap is below it in pink, and the readout gives them opposite senses, "seen from below" against "reflected, so reversed". That pair is the "two counter-rotating disks": same field, same spin, one of them in a mirror. His 2:52 close-up is not that pair. It has a soft near layer and a sharp far layer: the near one is the cap's convex reflection (its virtual image sits just behind the glass, so a phone focused deeper blurs it), the far one is the ceiling in the flat mirror, bounded by the mirror's oval with the telescopes reflected in it, and twelve times the brighter. Read frame by frame, the ceiling turns anticlockwise looking up and both reflections turn clockwise looking down, and the model's spin is set to match; the argument does not depend on the sign. Two same-way spirals with different centres sweep against each other only along the seam, and in a close-up on the seam that is all you see. The counter-rotation in his long-exposure stills is typed on them: a still has no arrowheads, and "Counter clockwise Northern" and "Clockwise Southern" are his captions, not the picture. Tab 2's point survives either way: two separate spiral centres in one sky, whichever way they turn, leave a seam of straight, oppositely bowing or colliding trails between them, and that is exactly what his "Equatorial Star Trails" crop shows. The real equator has no seam because the real sky has one axis, and its two poles are the two ends of it.</p>
+        <p>Tab 1's trick is one rotation seen from two sides. In his rig the two sides are the ceiling itself, which you see from below, and any reflection of it, which you see from above. Press <b>6 · Under the mirror</b>: the ceiling field is in the top of the frame, its reflection in the dome's cap below it, and the readout gives them opposite senses. That pair is the "two counter-rotating disks": same field, same spin, one of them in a mirror. Bright A is not that pair. Press <b>3</b> and watch him walk in: one patch of light becomes a soft near layer and a sharp far layer. The near one is the cap's convex reflection (its virtual image sits just behind the glass, so a phone focused deeper blurs it); the far one is the ceiling in the flat mirror, with the telescopes behind the dome seen through the glass between them. Looking straight down on the dome (12 Dec 1:29, 13 Dec 9:17) the field turns anticlockwise. A horizontal mirror keeps the sense you would see from above, so the ceiling itself turns clockwise seen from below; the model's spin is set to match, and the argument does not depend on the sign. Two same-way spirals with different centres sweep against each other only along the seam, and in a close-up on the seam that is all you see. The counter-rotation in his long-exposure stills is typed on them: a still has no arrowheads, and "Counter clockwise Northern" and "Clockwise Southern" are his captions, not the picture. Tab 2's point survives either way: two separate spiral centres in one sky, whichever way they turn, leave a seam of straight, oppositely bowing or colliding trails between them, and that is exactly what his "Equatorial Star Trails" crop shows. The real equator has no seam because the real sky has one axis, and its two poles are the two ends of it.</p>
       </div>
       <div class="note steel">
         <span class="k">Their side of it</span>
@@ -670,7 +671,7 @@ const DIPPER=[[0,0],[7,2],[13,1],[19,-2],[24,-9],[31,-12],[36,-6]].map(q=>({rho:
 const BEAMS=(()=>{const r=rng(51);const out=DIPPER.slice();for(let i=0;i<620;i++){out.push({rho:Math.sqrt(r()),psi:r()*2*Math.PI,dip:false})}return out})();
 const BEAMS_DENSE=(()=>{const r=rng(77);const out=BEAMS.slice();for(let i=0;i<6000;i++){out.push({rho:Math.sqrt(r()),psi:r()*2*Math.PI,dip:false})}return out})();
 // axis: straight up, tilted by P5.aim degrees toward the dome centre (the -x direction from the projector)
-function beamDir(b,theta){const am=P5.aim*D;const A=[-Math.sin(am),0,Math.cos(am)];const E1=[0,1,0];const E2=cross(A,E1);const rho=(b.dip?b.rho:b.rho*P5.cone*D);const ps=b.psi-theta;const sr=Math.sin(rho),cr=Math.cos(rho),c=Math.cos(ps),sn=Math.sin(ps);return [cr*A[0]+sr*(c*E1[0]+sn*E2[0]),cr*A[1]+sr*(c*E1[1]+sn*E2[1]),cr*A[2]+sr*(c*E1[2]+sn*E2[2])]}
+function beamDir(b,theta){const am=P5.aim*D;const A=[-Math.sin(am),0,Math.cos(am)];const E1=[0,1,0];const E2=cross(A,E1);const rho=(b.dip?b.rho:b.rho*P5.cone*D);const ps=b.psi+theta;const sr=Math.sin(rho),cr=Math.cos(rho),c=Math.cos(ps),sn=Math.sin(ps);return [cr*A[0]+sr*(c*E1[0]+sn*E2[0]),cr*A[1]+sr*(c*E1[1]+sn*E2[1]),cr*A[2]+sr*(c*E1[2]+sn*E2[2])]}
 // trace one beam through the room: glass entry/exit, mirror (reflect + transmit), ceiling, map
 function trace(b,theta){const d0=beamDir(b,theta);const out=[];
   const run=(o,d,w,refl,depth)=>{for(let step=0;step<6;step++){let best=null;
@@ -771,10 +772,13 @@ function render5(){PR=[P5.px,0,P5.pz];const PH=P5.photo;const {W,H,dpr}=fit(c5,P
   const sense=(getPt)=>{const pts=[];let n=0,zsum=0,zmin=1e9,zmax=-1e9;for(let k=0;k<72;k++){const P=getPt(k/72*2*Math.PI);n++;if(!P)continue;const q=proj(cam,P,W,H);if(q[2]>cull)continue;P.k=k;pts.push(P);zsum+=P[2];zmin=Math.min(zmin,P[2]);zmax=Math.max(zmax,P[2])}
     if(pts.length<6)return pts.length?'out of view':'—';let A=0;for(let k=0;k+1<pts.length;k++){if(pts[k].k+1!==pts[k+1].k)continue;const a=Math.atan2(pts[k][1]-PR[1],pts[k][0]-PR[0]),b=Math.atan2(pts[k+1][1]-PR[1],pts[k+1][0]-PR[0]);let d=b-a;if(d>Math.PI)d-=2*Math.PI;if(d<-Math.PI)d+=2*Math.PI;if(Math.abs(d)<1)A+=d}
     const above=cam.c[2]>zsum/pts.length;const edge=cam.c[2]>zmin-0.05&&cam.c[2]<zmax+0.05;const ccwFromAbove=A>0;const cw=above?!ccwFromAbove:ccwFromAbove;return edge?'edge-on, ambiguous':(cw?'clockwise':'anticlockwise')+(above?' (seen from above)':' (seen from below)')};
-  const probeFor=(kind,refl,fn)=>{let best=null;for(const b of BEAMS){let c=0;for(let k=0;k<36;k++){const sp=trace(b,k/36*2*Math.PI).find(x=>x.kind===kind&&x.refl===refl);if(sp&&(!fn||fn(sp.P)))c++}if(!best||c>best.c)best={b,c}}return best&&best.c>=4?best.b:null};
+  const probeFor=(kind,refl,fn)=>{let best=null;for(const b of BEAMS){let c=0;for(let k=0;k<36;k++){const sp=trace(b,k/36*2*Math.PI).find(x=>x.kind===kind&&x.refl===refl);if(!sp)continue;const PP=fn?fn(sp.P):sp.P;if(!PP)continue;const q=proj(cam,PP,W,H);if(q[2]<=cull)c++}if(!best||c>best.c)best={b,c}}return best&&best.c>=4?best.b:null};
   const senseOf=(kind,refl,on,fn)=>{if(!on)return 'hidden';const b=probeFor(kind,refl,fn);if(!b)return '—';return sense(th=>{const sp=trace(b,th).find(x=>x.kind===kind&&x.refl===refl);if(!sp)return null;return fn?fn(sp.P):sp.P})};
   document.getElementById('r5a').textContent=senseOf('ceiling',false,P5.ceil);
-  document.getElementById('r5g').textContent=senseOf('glass',false,P5.glass);
+  // direct hits on the glass: curl measured on screen (fit a rotation to the visible dots' motion), since a wall does not contain the spin axis
+  {const curl=()=>{if(!P5.glass)return 'hidden';const dth=0.06;const arr=[];for(const b of BEAMS){const s0=trace(b,P5.theta).filter(x=>x.kind==='glass'&&!x.refl),s1=trace(b,P5.theta+dth).filter(x=>x.kind==='glass'&&!x.refl);for(let i=0;i<Math.min(s0.length,s1.length);i++){const q0=proj(cam,s0[i].P,W,H),q1=proj(cam,s1[i].P,W,H);if(q0[2]>cull||q1[2]>cull)continue;arr.push({q:q0,dx:q1[0]-q0[0],dy:q1[1]-q0[1]})}}
+      if(arr.length<12)return arr.length?'too few in view':'—';let cx=0,cy=0;for(const p of arr){cx+=p.q[0];cy+=p.q[1]}cx/=arr.length;cy/=arr.length;let w=0,n=0;for(const p of arr){const rx=p.q[0]-cx,ry=p.q[1]-cy;const r2=rx*rx+ry*ry;if(r2<(6*dpr)**2)continue;w+=(rx*p.dy-ry*p.dx)/r2;n++}if(n<8)return 'too few in view';return (w>0?'clockwise':'anticlockwise')+' on screen ('+n+' dots)'};
+    document.getElementById('r5g').textContent=curl()}
   document.getElementById('r5b').textContent=senseOf('glass',true,P5.glass&&P5.mirror);
   document.getElementById('r5m').textContent=P5.mirror&&P5.mref?(senseOf('ceiling',false,true,P=>mirrorImage(cam.c,P)?[P[0],P[1],2*P5.hm-P[2]]:null)):'hidden';
   // sense of a reflected copy, measured on screen: follow one spot's image for a full turn of the projector and take the signed area of its path (y down, so positive is clockwise)
@@ -814,7 +818,9 @@ function render5(){PR=[P5.px,0,P5.pz];const PH=P5.photo;const {W,H,dpr}=fit(c5,P
         g.strokeStyle='rgba(255,255,255,0.3)';g.lineWidth=1*dpr;g.beginPath();g.arc(m.cx,m.cy,3*dpr,0,2*Math.PI);g.stroke();return ux>0?'right':'left'};
       g.strokeStyle='rgba(255,255,255,0.35)';g.lineWidth=1*dpr;g.setLineDash([4*dpr,4*dpr]);g.beginPath();g.moveTo(top[0]-90*dpr,top[1]);g.lineTo(top[0]+90*dpr,top[1]);g.stroke();g.setLineDash([]);
       if(capM)seamTxt[0]=arrow(capM,'cap reflection',-12);if(mirM)seamTxt[1]=arrow(mirM,'mirror reflection',12);
+      P5._curl=[capM?(capM.w>0?'clockwise':'anticlockwise'):'—',mirM?(mirM.w>0?'clockwise':'anticlockwise'):'—'];
       if(P5.showBox&&!P5.crop){const bw=H/6,bh=W/6;g.strokeStyle='rgba(130,230,150,0.9)';g.lineWidth=1.5*dpr;g.strokeRect(top[0]-bw/2,top[1]-bh/2,bw,bh);g.font=fontPx(10);g.fillStyle='rgba(130,230,150,0.95)';g.fillText('his 6:44 crop, turned 90°',top[0],top[1]-bh/2-8*dpr)}}}
+  {const c=P5._curl||['—','—'];const e=document.getElementById('r5curl');if(e)e.textContent=c[0]+' / '+c[1]}
   document.getElementById('r5s1').textContent=P5.gears?seamTxt[0]:'hidden';document.getElementById('r5s2').textContent=P5.gears?seamTxt[1]:'hidden';
   // camera-height gauge: where the camera is relative to the mirror plane and the dome top decides which reflections exist
   if(P5.gauge&&!P5.inside&&!P5.crop&&!PH){const x=14*dpr,y0=H*0.18,y1=H*0.82,zmax=2.2;const Y=z=>y1-(clamp(z,0,zmax)/zmax)*(y1-y0);g.textAlign='left';
@@ -836,15 +842,15 @@ bind('s5hm',P5,'hm',x=>x.toFixed(2)+' R','v5hm',0.01);bind('s5rm',P5,'rm',x=>x.t
 const setTrail5=v=>{const e=document.getElementById('s5trail');e.value=v;e.dispatchEvent(new Event('input'))};
 const b5crop=document.getElementById('b5crop');
 const uncrop5=()=>{P5.crop=false;P5.roll=0;P5.zoom=1;P5.lookAt=null;b5crop.textContent='Apply his 6:44 crop'};
-const setCam5=(az,el,dist,tilt,pan)=>{P5.inside=false;P5._force=true;P5.orbit=false;uncrop5();P5.pan=pan||0;s5az.set(az);s5el.set(el);s5dist.set(dist);s5tilt.set(tilt||0)};
+const setCam5=(az,el,dist,tilt,pan)=>{P5.inside=false;P5._force=true;P5.orbit=false;P5.walk=null;uncrop5();P5.pan=pan||0;s5az.set(az);s5el.set(el);s5dist.set(dist);s5tilt.set(tilt||0)};
 b5crop.addEventListener('click',()=>{if(P5.crop){uncrop5();return}const cam=cam5();const h=Math.hypot(cam.c[0],cam.c[1])||1;P5.lookAt=P5._seam3||[-P5.rm*cam.c[0]/h,-P5.rm*cam.c[1]/h,P5.hm];s5tilt.set(0);P5.roll=90;P5.zoom=6;P5.crop=true;setTrail5(60);P5.showBox=true;b5crop.textContent='Undo the crop'});
 // storyboard: his shots in order, each with the matching clip
 const SHOTS={
   open:{rig:[0.6,0.66,16,-0.4,0,64],cam:[180,30,2.9,-2,0],trail:0,plain:true,clip:'splice0_opening',t:'0 · Opening frame — 12 Dec 2024, 0:00–0:14, brightened',b:'The dome in front, the projector behind it between the telescopes, its glowing ball seen through the glass. One patch of light on the upper dome, nothing below. The thin line is the two-way mirror\u2019s rim: the lit patch is the mirror, seen from a little above its plane, showing the ceiling. The lower dome faces the camera and reflects the dark room.'},
   lit:{rig:[0.68,0.55,1.6,-0.1,0,50],cam:[35,14,3.2,0],trail:20,photo:false,clip:'splice1_lit_setup',t:'1 · Lights on — 13 Dec 2024, 5:02–5:20',b:'The projector is the white ball on the box outside the dome, below its base, pointing up at the ceiling. The mirror disk is inside, near the top. Nothing shines on the dome.'},
   above:{rig:[0.68,0.55,1.6,-0.1,0,50],cam:[35,86,2.2,0],trail:0,clip:'splice2_top_down_shadow',t:'2 · From above — 13 Dec 2024, 9:09–9:25',b:'Straight down. The ceiling field reflected in the dome, with his hands and phone reflected beside it, and the stars missing where his body blocks the ceiling. A reflection does that; light painted on the glass would not.'},
-  seam:{rig:[0.6,0.66,16,-0.4,0,64],cam:[180,40,1.4,-8,0],trail:0,gears:true,clip:'splice3_closeup_shear',t:'3 · The seam — 12 Dec 2024, 3:08–3:32, brightened',b:'Two reflections of one ceiling: the sharp field is the two-way mirror (half the light comes back), the soft discs over it are the same ceiling in the near glass, inches from the lens and out of focus (a twenty-fifth of the light). Both turn the same way on screen, so where they meet their edges sweep opposite ways, like two gears. His fingers point at that shear. The arrows on the model are measured, not drawn in.'},
-  follow:{rig:[0.6,0.66,16,-0.4,0,64],cam:[165,28,1.3,14,0],trail:0,gears:true,orbit:true,clip:'splice4_follows_camera',t:'4 · “Follows no matter where you go” — 12 Dec 2024, 4:03–4:28, brightened',b:'As the phone moves, both reflections slide across the glass with it, because reflections do. The model orbits to match; drag to stop it. A celestial pole stays put for everyone.'},
+  seam:{rig:[0.6,0.66,16,-0.4,0,64],cam:[180,30,2.9,-2,0],trail:0,gears:true,walk:true,clip:'splice3_brightA_walkin',t:'3 · Bright A, walking in — 12 Dec 2024, 2:47–3:02, brightened',b:'He walks in from the opening position and the model’s camera walks in with him. One patch of light becomes two groups: the soft one is the near glass reflecting the ceiling, inches from the lens and out of focus; the sharp one is the mirror, with the telescopes behind the dome seen through the glass between them. Both turn anticlockwise from above. Along the seam their edges move opposite ways, and a group read by its edge looks reversed. That is the counter-rotation; drag to stop the walk.'},
+  follow:{rig:[0.6,0.66,16,-0.4,0,64],cam:[165,28,1.3,14,0],trail:0,gears:true,orbit:true,clip:'splice4_follows_camera',t:'4 · Bright B, “follows no matter where you go” — 12 Dec 2024, 4:03–4:28, brightened',b:'As the phone moves, both reflections slide across the glass with it, because reflections do. The model orbits to match; drag to stop it. A celestial pole stays put for everyone.'},
   crop:{rig:[0.6,0.66,16,-0.4,0,64],cam:[180,36,2.2,-4,0],trail:120,gears:true,box:true,clip:'splice5_equator_crop',t:'5 · His “Equatorial Star Trails” — 12 Dec 2024, 6:21–6:52',b:'The dual-spiral long exposure: the big oval spiral is the ceiling in the two-way mirror, the small tight one below it is the same ceiling in the convex glass, which shrinks it. Then the same picture zoomed on the seam and turned through 90°. The green box is that crop on the model; press Apply his 6:44 crop to do the same thing to it. The trails stay nested arcs either side of a gap.'},
   under:{rig:[0.68,0.55,1.6,-0.1,0,50],cam:[35,2,1.6,25],trail:0,clip:'splice6_under_mirror',t:'6 · Under the mirror — 13 Dec 2024, 6:58–7:22',b:'With the camera below the mirror plane the mirror shows the map and the room, not the ceiling, and the second spiral is gone; his dual spirals exist only for a camera above the mirror. This is also where tab 1 lives: the ceiling above and its reflection in the cap below are both in frame and the readout gives them opposite senses. One field, one spin, one mirror.'}};
 const vid5=document.getElementById('vid5');const sync5=document.getElementById('sync5'),stage5=c5.parentElement,readout5=stage5.querySelector('.readout');
@@ -852,7 +858,7 @@ function placeCanvas5(){if(P5.photo){if(c5.parentElement!==sync5){sync5.insertBe
 document.getElementById('k5photo').addEventListener('change',placeCanvas5);
 document.querySelectorAll('#story5 .btn').forEach(btn=>btn.addEventListener('click',()=>{const s=SHOTS[btn.dataset.shot];if(!s)return;
   document.querySelectorAll('#story5 .btn').forEach(b=>b.setAttribute('aria-pressed',String(b===btn)));
-  setRig5(...s.rig);setCam5(...s.cam);setTrail5(s.trail);P5.showBox=!!s.box;P5.orbit=!!s.orbit;P5.plain=!!s.plain;{const e=document.getElementById('k5photo');e.checked=s.photo!==false;e.dispatchEvent(new Event('change'))}
+  setRig5(...s.rig);setCam5(...s.cam);setTrail5(s.trail);P5.showBox=!!s.box;P5.orbit=!!s.orbit;P5.plain=!!s.plain;P5.walk=s.walk?{t:0,d0:s.cam[2],e0:s.cam[1]}:null;{const e=document.getElementById('k5photo');e.checked=s.photo!==false;e.dispatchEvent(new Event('change'))}
   for(const [id,v] of [['k5gears',!!s.gears||P5.gears],['k5paths',false]]){const e=document.getElementById(id);e.checked=v;e.dispatchEvent(new Event('change'))}
   document.getElementById('sync5').hidden=false;document.getElementById('clipnote5').hidden=false;
   document.getElementById('vt5').textContent=s.t;document.getElementById('vb5').textContent=s.b;document.getElementById('vs5').textContent='Clip: clips/'+s.clip+'.mp4 · source links under the stills below';
@@ -871,7 +877,7 @@ const b5play=document.getElementById('b5play');b5play.addEventListener('click',(
 for(const [id,key] of [['k5mirror','mirror'],['k5mref','mref'],['k5paths','paths'],['k5plane','plane'],['k5ceil','ceil'],['k5glass','glass'],['k5map','map'],['k5fres','fres'],['k5beams','beams'],['k5gears','gears'],['k5gauge','gauge'],['k5ghost','ghost'],['k5photo','photo']])document.getElementById(id).addEventListener('change',e=>{P5[key]=e.target.checked});
 (function(){let drag=null;c5.style.touchAction='none';c5.style.cursor='grab';
   c5.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,az:P5.az,el:P5.el};c5.setPointerCapture(e.pointerId)});
-  c5.addEventListener('pointermove',e=>{if(!drag)return;P5.inside=false;P5.orbit=false;P5.pan=0;if(P5.crop)uncrop5();const k=0.4;s5az.set(((drag.az-(e.clientX-drag.x)*k)%360+360)%360);s5el.set(clamp(drag.el+(e.clientY-drag.y)*k,2,88))});
+  c5.addEventListener('pointermove',e=>{if(!drag)return;P5.inside=false;P5.orbit=false;P5.walk=null;P5.pan=0;if(P5.crop)uncrop5();const k=0.4;s5az.set(((drag.az-(e.clientX-drag.x)*k)%360+360)%360);s5el.set(clamp(drag.el+(e.clientY-drag.y)*k,2,88))});
   const end=()=>{drag=null};c5.addEventListener('pointerup',end);c5.addEventListener('pointercancel',end)})();
 
 /* ================= tabs, loop, resize ================= */
@@ -894,7 +900,7 @@ function loop(now){const dt=Math.min(0.1,(now-last)/1000);last=now;
   else if(active==='fields'){if(P2.playing)P2.theta+=dt*0.25*P2.speed;render2()}
   else if(active==='spheres'){if(P4.tween){const tw=P4.tween;tw.t+=dt;const u=Math.min(1,tw.t/tw.secs);const e=u*u*(3-2*u);tw.setter(tw.from+(tw.to-tw.from)*e);if(u>=1){P4.tween=null;tw.res()}}
     if(P4.spin)s4gst.set((P4.gst+dt*0.08)%24);render4()}
-  else if(active==='mirror'){if(P5.playing)P5.theta+=dt*0.45*P5.speed;if(P5.orbit)s5az.set(((P5.az+dt*5)%360+360)%360);render5()}
+  else if(active==='mirror'){if(P5.playing)P5.theta+=dt*0.45*P5.speed;if(P5.orbit)s5az.set(((P5.az+dt*5)%360+360)%360);if(P5.walk){const w=P5.walk;w.t+=dt;const u=Math.min(1,w.t/9);const e=u*u*(3-2*u);s5dist.set(w.d0-(w.d0-1.35)*e);s5el.set(w.e0+8*e);s5tilt.set(-2+12*e);if(u>=1)P5.walk=null}render5()}
   requestAnimationFrame(loop)}
 requestAnimationFrame(loop);
 window.addEventListener('resize',()=>{if(active==='tenerife')scheduleRender3()});
