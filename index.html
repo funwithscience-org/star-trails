@@ -54,7 +54,7 @@ input[type=range]{width:100%;accent-color:var(--accent);margin:0}
 .check input{accent-color:var(--accent);width:16px;height:16px;margin:0}
 .readout{display:flex;flex-wrap:wrap;gap:8px 20px;font-family:var(--mono);font-size:13px;color:var(--muted);padding:8px 2px;font-variant-numeric:tabular-nums}
 .readout b{font-weight:600;color:var(--fg)}
-.swA{color:var(--fieldA)} .swB{color:var(--fieldB)} .swG{color:#e1ebff} .swI{color:var(--accent)}
+.swA{color:var(--fieldA)} .swB{color:var(--fieldB)} .swG{color:#e1ebff} .swF{color:#96b9ff} .swI{color:var(--accent)}
 .note{background:var(--panel);border-left:3px solid var(--accent);padding:12px 16px;border-radius:0 6px 6px 0;font-size:15px;color:var(--fg);max-width:78ch}
 .note p{margin:0 0 8px} .note p:last-child{margin:0}
 .note .k{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
@@ -72,7 +72,7 @@ input[type=range]{width:100%;accent-color:var(--accent);margin:0}
 @media (max-width:820px){.refs{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .legend{display:flex;gap:16px;font-size:13px;color:var(--muted);flex-wrap:wrap}
 .legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px;background:currentColor}
-.legend .a{color:var(--fieldA)} .legend .b{color:var(--fieldB)} .legend .g{color:#e1ebff} .legend .i{color:var(--accent)}
+.legend .a{color:var(--fieldA)} .legend .b{color:var(--fieldB)} .legend .g{color:#e1ebff} .legend .f{color:#96b9ff} .legend .i{color:var(--accent)}
 hr{border:0;border-top:1px solid var(--line);margin:4px 0}
 footer{color:var(--muted);font-size:13px;max-width:78ch}
 @media (max-width:820px){.panel{grid-template-columns:minmax(0,1fr)} .pair{grid-template-columns:1fr}}
@@ -244,6 +244,7 @@ footer{color:var(--muted);font-size:13px;max-width:78ch}
       <div class="readout">
         <span>on screen, the <b class="swA">ceiling field</b> turns <b id="r5a">—</b></span>
         <span>the <b class="swG">direct copy on the glass</b> turns <b id="r5g">—</b></span>
+        <span>on the <b class="swG">near wall</b> it <b id="r5near">—</b>, on the <b class="swF">far wall</b> it <b id="r5far">—</b></span>
         <span>the <b class="swB">mirrored copy on the glass</b> turns <b id="r5b">—</b></span>
         <span>the <b class="swB">ceiling seen in the mirror</b> turns <b id="r5m">—</b></span>
         <span>the <b class="swB">glass pattern seen in the mirror</b> turns <b id="r5m2">—</b></span>
@@ -262,7 +263,8 @@ footer{color:var(--muted);font-size:13px;max-width:78ch}
       <div class="note">
         <span class="k">What the videos show</span>
         <p>Two videos, one device, two set-ups. On 13 December 2024, with the lights on, the device is a clear acrylic dome over a printed flat-earth map, a two-way mirror disk held by magnets near the top inside, and a pinhole star projector on a box outside, beside the dome. On 12 December, in the dark, the glowing projector sits on the tray at the front edge, apparently inside the dome, and a horizontal edge visible through the glass in his long exposures puts the mirror lower, about mid-height. Both are presets; the sliders cover anything in between. One projector, one field, every beam traced: to the ceiling, through the glass (lighting it where it crosses), off the mirror onto the cap or down onto the map.</p>
-        <p>The two separated, counter-rotating disks of the 12 December close-ups are the star field on the cap, seen from below, and the same field reflected in the mirror's top surface, seen from above, since the camera stands a little above the mirror plane. Press <b>His close-up (12 Dec)</b>: the big ring on the cap, the small bright one in the mirror, exactly the pair in his long exposures. The mirror does not reverse anything here. A horizontal mirror leaves a rotation about the vertical alone; what flips the sense is the camera seeing one rotation from both sides. The readout says "seen from below" or "seen from above" next to each copy for that reason. One rotation, viewed from both sides, reads as two. That is also what a sphere does for the real sky: the north and south celestial poles are one rotation seen from its two sides.</p>
+        <p>The two counter-moving star fields in the 12 December close-ups are the near wall and the far wall of the same dome. Close to the glass, the spots in front of the lens are large and soft, the spots on the far side small and sharp, and as the projector turns the near ones sweep one way across the screen while the far ones sweep the other, like a carousel seen from the side. The readout reports both. That is one rotation seen from its front and its back, and it does not depend on where the projector sits or on the mirror. Walk round the dome and which wall is "near" changes with you, which is his "it follows no matter where you go". In his long exposures a second mechanism adds a tight bright ring at mirror height: the cap pattern reflected in the mirror's top surface, seen from above by a camera a little above the mirror plane. Press <b>His close-up (12 Dec)</b> and <b>His long exposure (12 Dec)</b>.</p>
+        <p>In neither case does anything turn the other way. A horizontal mirror leaves a rotation about the vertical alone; the readout says "seen from below" or "seen from above" next to each copy because that is the whole story: one rotation, viewed from two sides, reads as two. That is also what a sphere does for the real sky. The north and south celestial poles are one rotation seen from its two sides.</p>
         <p>Switch the mirror off and the reflected disk, the mirrored beams and the hot spots vanish; the ceiling and the cap pattern remain, turning one way. Everything he calls the anti-arc is on the mirror's side of that switch.</p>
         <p>The projector carries a Dipper-shaped asterism so the mirrored copy can be checked by eye: the handle bends the other way. Orion photographed from Australia is Orion turned upside down, belt and sword in the same order as from Europe: a rotation, not a reflection. The southern sky also contains stars with no northern counterpart at all. A mirror cannot produce either.</p>
       </div>
@@ -294,7 +296,7 @@ footer{color:var(--muted);font-size:13px;max-width:78ch}
       <label class="check"><input type="checkbox" id="k5fres"> Ceiling reflected in the outer surface (Fresnel, faint)</label>
       <label class="check"><input type="checkbox" id="k5beams"> Show beam paths</label>
       <hr>
-      <div class="legend"><span class="a">Ceiling</span><span class="g">Direct, on the glass</span><span class="b">Via the mirror (reversed)</span><span class="i">Map hot spots</span></div>
+      <div class="legend"><span class="a">Ceiling</span><span class="g">On the glass, near wall</span><span class="f">On the glass, far wall</span><span class="b">Via the mirror (reversed)</span><span class="i">Map hot spots</span></div>
       <p class="cap">Geometry from the lit-room shots of 13 Dec and the dark frames of 12 Dec. Beams are traced through glass entry and exit (refraction neglected), mirror reflection and transmission (two-way, 50% reflect, 35% transmit), ceiling and map. Looking through the mirror dims what is behind it. Phone field of view 72°. You can drag on the picture to orbit.</p>
     </aside>
   </section>
@@ -664,7 +666,8 @@ function render5(){PR=[P5.px,0,P5.pz];const {W,H,dpr}=fit(c5,1.55);const g=g5;co
   const tr=P5.trail*D,K=Math.max(1,Math.ceil(P5.trail/4));const gain=1+P5.trail/30;
   // gather spots per beam per step, keyed by path signature so trails join like with like
   const base={glass:0.9,ceiling:0.35,map:0.6};
-  const colOf=sp=>sp.refl?COL.B:(sp.kind==='ceiling'?COL.A:(sp.kind==='map'?COLI:COLG));
+  const nearWall=P=>dot(P,sub(cam.c,P))>0;
+  const colOf=(sp,P)=>sp.refl?COL.B:(sp.kind==='ceiling'?COL.A:(sp.kind==='map'?COLI:(P&&!nearWall(P)?'150,185,255':COLG)));
   const alphaOf=(sp,P)=>{let a=base[sp.kind]*sp.w*gain;if(throughMirror(cam.c,P))a*=P5.T;return Math.min(1,a)};
   const layers={map:[],glass:[],ceiling:[]};
   const keyOf=(sp,ord)=>sp.kind+(sp.refl?'r':'d')+ord;
@@ -673,7 +676,7 @@ function render5(){PR=[P5.px,0,P5.pz];const {W,H,dpr}=fit(c5,1.55);const g=g5;co
     for(const [key,sp] of steps[K]){if(!layers[sp.kind])continue;const show=(sp.kind==='ceiling'&&P5.ceil)||(sp.kind==='glass'&&P5.glass)||(sp.kind==='map'&&P5.map);if(!show)continue;
       const pts=steps.map(st=>{const m=st.get(key);return m?m.P:null});
       layers[sp.kind].push({pts,sp,sz:(b.dip?3.4:2.4)*dpr*(sp.kind==='glass'?0.75:1)})}}
-  const drawTrail=(L)=>{for(const {pts,sp,sz} of L){const col=colOf(sp);for(let k=0;k<K;k++){if(!pts[k]||!pts[k+1])continue;const q0=proj(cam,pts[k],W,H),q1=proj(cam,pts[k+1],W,H);if(q0[2]>cull||q1[2]>cull)continue;const a=alphaOf(sp,pts[k+1]);if(a<0.02)continue;g.strokeStyle='rgba('+col+','+(a*0.85*(k+1)/K)+')';g.lineWidth=sz*0.8;g.beginPath();g.moveTo(q0[0],q0[1]);g.lineTo(q1[0],q1[1]);g.stroke()}
+  const drawTrail=(L)=>{for(const {pts,sp,sz} of L){const col=colOf(sp,pts[K]);for(let k=0;k<K;k++){if(!pts[k]||!pts[k+1])continue;const q0=proj(cam,pts[k],W,H),q1=proj(cam,pts[k+1],W,H);if(q0[2]>cull||q1[2]>cull)continue;const a=alphaOf(sp,pts[k+1]);if(a<0.02)continue;g.strokeStyle='rgba('+col+','+(a*0.85*(k+1)/K)+')';g.lineWidth=sz*0.8;g.beginPath();g.moveTo(q0[0],q0[1]);g.lineTo(q1[0],q1[1]);g.stroke()}
       const h=pts[K];if(!h)continue;const q=proj(cam,h,W,H);if(q[2]>cull)continue;const a=alphaOf(sp,h);if(a<0.02)continue;g.fillStyle='rgba('+col+','+a+')';g.beginPath();g.arc(q[0],q[1],sz*0.55,0,2*Math.PI);g.fill()}};
   drawTrail(layers.map);drawTrail(layers.glass);drawTrail(layers.ceiling);
   // the same spots seen reflected in the mirror (the pond effect): reversed, half brightness
@@ -697,6 +700,10 @@ function render5(){PR=[P5.px,0,P5.pz];const {W,H,dpr}=fit(c5,1.55);const g=g5;co
   document.getElementById('r5m').textContent=P5.mirror&&P5.mref?(senseOf('ceiling',false,true,P=>mirrorImage(cam.c,P)?[P[0],P[1],2*P5.hm-P[2]]:null)):'hidden';
   document.getElementById('r5m2').textContent=P5.mirror&&P5.mref?(senseOf('glass',false,true,P=>mirrorImage(cam.c,P)?[P[0],P[1],2*P5.hm-P[2]]:null)):'hidden';
   document.getElementById('r5i').textContent=senseOf('map',true,P5.map&&P5.mirror);
+  // carousel: mean horizontal screen motion of glass spots on the near wall vs the far wall
+  {let nx=0,nn=0,fx=0,fn=0;for(const b of BEAMS){const a=trace(b,P5.theta).filter(x=>x.kind==='glass'&&!x.refl),c=trace(b,P5.theta+0.04).filter(x=>x.kind==='glass'&&!x.refl);for(let i=0;i<Math.min(a.length,c.length);i++){const q0=proj(cam,a[i].P,W,H),q1=proj(cam,c[i].P,W,H);if(q0[2]>cull||q1[2]>cull)continue;const dx=q1[0]-q0[0];if(nearWall(a[i].P)){nx+=dx;nn++}else{fx+=dx;fn++}}}
+    const word=(sx,n)=>n<4?'—':(Math.abs(sx/n)<0.05?'barely moving':(sx>0?'sweeps right':'sweeps left'));
+    document.getElementById('r5near').textContent=P5.glass?word(nx,nn):'hidden';document.getElementById('r5far').textContent=P5.glass?word(fx,fn):'hidden'}
   document.getElementById('r5cam').textContent=P5.inside?'inside the dome, under the mirror, looking up':'outside the dome'}
 const s5az=bind('s5az',P5,'az',x=>Math.round(((x%360)+360)%360)+'°','v5az',1,()=>{P5.inside=false});
 const s5el=bind('s5el',P5,'el',x=>Math.round(x)+'°','v5el',1,()=>{P5.inside=false});
