@@ -23,4 +23,4 @@ No build step, no dependencies beyond Google Fonts. `index.html` is the whole ap
 
 Reference photo: star trails over Teide Observatory, Tenerife, by J.C. Casado / IAC. Used here for comparison; all rights remain with the photographer.
 
-`clips/` holds six short excerpts (18–31 s, scaled to 854–960 px, no audio; clips 3 and 4 with brightness, contrast and gamma lifted, nothing cut inside them) and `ref/` eight stills from Joseph Hanvey's videos of 12 and 13 December 2024 (YouTube `Piub3NEOxUo` and `x3HEgGQL92E`), reproduced at reduced size for the purpose of identifying the apparatus under discussion and commenting on it. Rights remain with the author.
+`clips/` holds seven short excerpts (18–31 s, scaled to 854–960 px, no audio; clips 3 and 4 with brightness, contrast and gamma lifted, nothing cut inside them) and `ref/` eight stills from Joseph Hanvey's videos of 12 and 13 December 2024 (YouTube `Piub3NEOxUo` and `x3HEgGQL92E`), reproduced at reduced size for the purpose of identifying the apparatus under discussion and commenting on it. Rights remain with the author.
