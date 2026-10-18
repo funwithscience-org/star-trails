@@ -85,7 +85,8 @@ footer{color:var(--muted);font-size:13px;max-width:78ch}
     <button class="tab" role="tab" id="tab-dome" aria-selected="true" data-panel="dome"><span class="n">1</span>The dome trick</button>
     <button class="tab" role="tab" id="tab-fields" aria-selected="false" data-panel="fields"><span class="n">2</span>Growing the fields</button>
     <button class="tab" role="tab" id="tab-tenerife" aria-selected="false" data-panel="tenerife"><span class="n">3</span>Virtual Tenerife</button>
-    <button class="tab" role="tab" id="tab-spheres" aria-selected="false" data-panel="spheres"><span class="n">4</span>Personal spheres</button>
+    <!-- Personal spheres (two observers) is parked: panel-spheres and its code remain below, unlinked. -->
+    <button class="tab" role="tab" id="tab-mirror" aria-selected="false" data-panel="mirror"><span class="n">4</span>The mirror dome</button>
   </nav>
 
   <!-- ───────── Panel 1: the dome trick ───────── -->
@@ -227,6 +228,43 @@ footer{color:var(--muted);font-size:13px;max-width:78ch}
       <hr>
       <div class="legend"><span class="a">Chicago 41.9° N 87.6° W</span><span class="b">Washington 38.9° N 77.0° W</span></div>
       <p class="cap">Nine real stars at the sidereal time shown. Altair is up in Chicago but not yet in Washington; Sirius has risen in Washington but not in Chicago. You can drag on the picture to orbit.</p>
+    </aside>
+  </section>
+
+  <!-- ───────── Panel 5 (shown as tab 4): the mirror dome ───────── -->
+  <section class="panel" id="panel-mirror" role="tabpanel" hidden>
+    <div class="stage">
+      <canvas id="c5" aria-label="3D reconstruction of a star projector throwing a star field onto a ceiling, with a glossy dome reflecting it"></canvas>
+      <div class="readout">
+        <span>on screen, the <b class="swA">ceiling field</b> turns <b id="r5a">—</b></span>
+        <span>its <b class="swB">reflection in the dome</b> turns <b id="r5b">—</b></span>
+        <span>camera <b id="r5cam">outside, at his tripod</b></span>
+      </div>
+      <div class="note">
+        <span class="k">What the video shows</span>
+        <p>One pinhole star projector on the tray at the rim of a dark, glossy dome. Its beams go up and paint one star field on the ceiling, turning one way around the point above the projector. The dome is a convex mirror, so a camera outside it also sees a small reflected copy of the ceiling on the dome's surface, and a reflection reverses the sense of rotation. His long exposure at the end of the video shows exactly this: a big spiral on the ceiling and a small, oppositely wound spiral on the dome. That is the "anti-arc".</p>
+        <p>Step inside. An observer standing under the ceiling sees the star field directly and sees it once. The dome's inner face reflects the tray and the observer, not the ceiling, and the camera-side reflection does not exist from here. The second rotation is something the camera sees of the dome, not something the sky does.</p>
+        <p>The projector carries a Dipper-shaped asterism so the reflection can be checked by eye: in the mirror the handle bends the other way. A mirror image reverses handedness. Orion photographed from Australia is Orion turned upside down, handle and sword in the same order as from Europe: a rotation, not a reflection. The southern sky also contains stars with no northern counterpart at all. A mirror cannot produce either.</p>
+      </div>
+      <div class="note steel">
+        <span class="k">Their side of it</span>
+        <p>"The real sky is a mirror too, a crystalline dome and a superfluid ceiling like a two-way mirror, so the reflection is the mechanism, not a trick." Grant the mirror. Then the southern sky is a mirror image of the northern one: the same stars, reversed, and a Dipper hanging mirrored over the south. It is not. Grant also that the reflection moves with the viewer, which he demonstrates ("it follows no matter where you go"): the south celestial pole does not follow anyone. It sits at a fixed compass bearing and at an altitude set only by latitude.</p>
+      </div>
+    </div>
+    <aside class="controls">
+      <h2>Projector, ceiling, dome</h2>
+      <div class="btns"><button class="btn small" id="b5his">His tripod</button><button class="btn small" id="b5above">From above</button><button class="btn small" id="b5low">Low, close</button><button class="btn small" id="b5inside">Inside the dome</button></div>
+      <div class="ctl"><div class="row"><label for="s5az">Orbit</label><span class="val" id="v5az">35°</span></div><input type="range" id="s5az" min="0" max="360" value="35"></div>
+      <div class="ctl"><div class="row"><label for="s5el">Camera height</label><span class="val" id="v5el">12°</span></div><input type="range" id="s5el" min="2" max="88" value="8"></div>
+      <div class="ctl"><div class="row"><label for="s5dist">Distance</label><span class="val" id="v5dist">4.0 R</span></div><input type="range" id="s5dist" min="18" max="90" value="32"></div>
+      <div class="ctl"><div class="row"><label for="s5speed">Projector spin</label><span class="val" id="v5speed">1.0×</span></div><input type="range" id="s5speed" min="0" max="30" value="10"></div>
+      <div class="ctl"><div class="row"><label for="s5trail">Exposure (trail)</label><span class="val" id="v5trail">20°</span></div><input type="range" id="s5trail" min="0" max="120" value="20"></div>
+      <div class="btns"><button class="btn" id="b5play">Pause</button></div>
+      <label class="check"><input type="checkbox" id="k5refl" checked> Show the reflection in the dome</label>
+      <label class="check"><input type="checkbox" id="k5beams"> Show projector beams</label>
+      <hr>
+      <div class="legend"><span class="a">Star field on the ceiling</span><span class="b">Its reflection in the dome</span></div>
+      <p class="cap">Geometry as filmed: projector on the tray outside the dome rim, plain ceiling about four dome-radii up, dome treated as a convex spherical mirror. Reflection points are solved per star by Fermat's principle, not drawn by hand. You can drag on the picture to orbit.</p>
     </aside>
   </section>
 
@@ -540,15 +578,76 @@ document.getElementById('b4all').addEventListener('click',()=>{s4cam.set(0);s4r.
   c4.addEventListener('pointermove',e=>{if(!drag)return;P4.orbitAz=drag.az-(e.clientX-drag.x)*0.3;P4.orbitEl=clamp(drag.el+(e.clientY-drag.y)*0.3,-60,80)});
   const end=()=>{drag=null};c4.addEventListener('pointerup',end);c4.addEventListener('pointercancel',end)})();
 
+/* ================= PANEL 5 (tab 4): the mirror dome ================= */
+const c5=document.getElementById('c5'),g5=c5.getContext('2d');
+const P5={az:35,el:8,dist:3.2,speed:1,trail:20,theta:0,playing:true,refl:true,beams:false,inside:false};
+const HC=4.0,PR=[1.3,0,0.12],BASE_R=1.7;
+// projector beams: a Dipper-shaped asterism plus random pinholes, as (az, el) in the projector's frame
+const DIPPER=[[0,0],[7,2],[13,1],[19,-2],[24,-9],[31,-12],[36,-6]].map(q=>({az:(200+q[0]*1.2)*D,el:(58+q[1]*1.2)*D,dip:true}));
+const BEAMS=(()=>{const r=rng(51);const out=DIPPER.slice();for(let i=0;i<48;i++){out.push({az:r()*2*Math.PI,el:(38+50*Math.sqrt(r()))*D,dip:false})}return out})();
+function ceilingPt(b,theta){const a=b.az+theta;const d=[Math.cos(b.el)*Math.cos(a),Math.cos(b.el)*Math.sin(a),Math.sin(b.el)];const t=(HC-PR[2])/d[2];const P=[PR[0]+t*d[0],PR[1]+t*d[1],HC];return (Math.hypot(P[0],P[1])>7)?null:P}
+function reflPt(C,P){let S=norm([C[0]+P[0],C[1]+P[1],C[2]+P[2]]);for(let i=0;i<40;i++){const u=norm(sub(C,S)),v=norm(sub(P,S));const n=norm([u[0]+v[0],u[1]+v[1],u[2]+v[2]]);S=norm([S[0]+0.6*(n[0]-S[0]),S[1]+0.6*(n[1]-S[1]),S[2]+0.6*(n[2]-S[2])])}
+  if(S[2]<0.02)return null;if(dot(S,sub(C,S))<=0||dot(S,sub(P,S))<=0)return null;return S}
+function cam5(){if(P5.inside){const c=[0,0,0.1],t=[0,0,1.1];const f=[0,0,1];const u=[1,0,0];const r=norm(cross(f,u));const up=cross(r,f);return {c,f,r,up,half:85*D}}
+  const ca=Math.cos(P5.az*D),sa=Math.sin(P5.az*D),ce=Math.cos(P5.el*D),se=Math.sin(P5.el*D);const c=[P5.dist*ce*ca,P5.dist*ce*sa,Math.max(0.15,P5.dist*se)];const t=[0,0,0.5+0.9*Math.max(0,1-P5.el/60)];
+  const f=norm(sub(t,c));let r=cross(f,[0,0,1]);if(len(r)<1e-4)r=cross(f,[1,0,0]);r=norm(r);const up=cross(r,f);return {c,f,r,up,half:46*D}}
+function render5(){const {W,H,dpr}=fit(c5,1.55);const g=g5;const cam=cam5();const cull=cam.half*1.25;g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,W,H);
+  const bg=g.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#05070e');bg.addColorStop(1,'#0b1020');g.fillStyle=bg;g.fillRect(0,0,W,H);
+  const mono=getComputedStyle(document.body).getPropertyValue('--mono');g.lineCap='round';g.textAlign='center';g.textBaseline='middle';
+  // ceiling grid
+  g.strokeStyle='rgba(120,150,210,0.14)';g.lineWidth=1*dpr;for(let x=-6;x<=6;x+=1){poly(g,cam,[[x,-6,HC],[x,6,HC]],W,H,cull);poly(g,cam,[[-6,x,HC],[6,x,HC]],W,H,cull)}
+  // tray (flat base) and dome
+  if(!P5.inside){const pts=[];let ok=true;for(let i=0;i<=72;i++){const a=i/72*2*Math.PI;const q=proj(cam,[BASE_R*Math.cos(a),BASE_R*Math.sin(a),0],W,H);if(q[2]>cull){ok=false;break}pts.push(q)}
+    if(ok){g.beginPath();pts.forEach((q,i)=>i?g.lineTo(q[0],q[1]):g.moveTo(q[0],q[1]));g.closePath();g.fillStyle='rgba(60,70,100,0.25)';g.fill();g.strokeStyle='rgba(120,135,180,0.4)';g.stroke()}}
+  g.strokeStyle='rgba(120,150,210,0.3)';for(const lat of [0,20,40,60,80]){const pts=[];for(let i=0;i<=96;i++){const a=i/96*2*Math.PI;pts.push([Math.cos(lat*D)*Math.cos(a),Math.cos(lat*D)*Math.sin(a),Math.sin(lat*D)])}poly(g,cam,pts,W,H,cull)}
+  for(let az=0;az<360;az+=30){const pts=[];for(let i=0;i<=30;i++){const l=i/30*Math.PI/2;pts.push([Math.cos(l)*Math.cos(az*D),Math.cos(l)*Math.sin(az*D),Math.sin(l)])}poly(g,cam,pts,W,H,cull)}
+  // projector
+  {const q=proj(cam,PR,W,H);if(q[2]<=cull){g.fillStyle='rgba(240,179,91,0.95)';g.beginPath();g.arc(q[0],q[1],5*dpr,0,2*Math.PI);g.fill();g.font='500 '+(11*dpr)+'px '+mono;g.fillStyle='rgba(240,179,91,0.9)';g.fillText('projector',q[0],q[1]+13*dpr)}
+    g.strokeStyle='rgba(240,179,91,0.35)';g.setLineDash([3*dpr,4*dpr]);poly(g,cam,[PR,[PR[0],PR[1],HC]],W,H,cull);g.setLineDash([])}
+  const tr=P5.trail*D,K=Math.max(1,Math.ceil(P5.trail/4));
+  const showRefl=P5.refl&&!P5.inside;
+  // ceiling stars (direct) and their reflections
+  for(const b of BEAMS){const cp=[],rp=[];for(let k=K;k>=0;k--){const P=ceilingPt(b,P5.theta-tr*k/K);cp.push(P);rp.push((showRefl&&P)?reflPt(cam.c,P):null)}
+    const sz=(b.dip?3.4:2.4)*dpr;
+    if(P5.beams&&cp[K]){g.strokeStyle='rgba('+COL.A+',0.12)';g.lineWidth=1*dpr;poly(g,cam,[PR,cp[K]],W,H,cull)}
+    const drawTrail=(pts,col,s)=>{for(let k=0;k<K;k++){if(!pts[k]||!pts[k+1])continue;const q0=proj(cam,pts[k],W,H),q1=proj(cam,pts[k+1],W,H);if(q0[2]>cull||q1[2]>cull)continue;g.strokeStyle='rgba('+col+','+(0.7*(k+1)/K)+')';g.lineWidth=s*0.8;g.beginPath();g.moveTo(q0[0],q0[1]);g.lineTo(q1[0],q1[1]);g.stroke()}
+      const h=pts[K];if(!h)return;const q=proj(cam,h,W,H);if(q[2]>cull)return;g.fillStyle='rgba('+col+',1)';g.beginPath();g.arc(q[0],q[1],s*0.55,0,2*Math.PI);g.fill()};
+    drawTrail(cp,COL.A,sz);if(showRefl)drawTrail(rp,COL.B,sz*0.8)}
+  // rotation centre on the ceiling and its reflection
+  const CTR=[PR[0],PR[1],HC];{const q=proj(cam,CTR,W,H);if(q[2]<=cull){g.strokeStyle='rgba('+COL.A+',0.8)';g.lineWidth=1*dpr;g.beginPath();g.arc(q[0],q[1],6*dpr,0,2*Math.PI);g.stroke()}
+    if(showRefl){const S=reflPt(cam.c,CTR);if(S){const q2=proj(cam,S,W,H);if(q2[2]<=cull){g.strokeStyle='rgba('+COL.B+',0.8)';g.beginPath();g.arc(q2[0],q2[1],6*dpr,0,2*Math.PI);g.stroke()}}}}
+  // apparent senses
+  const sense=(get)=>{const c0=get(0,true),a=get(0,false),b=get(0.05,false);if(!c0||!a||!b)return '—';const pc=proj(cam,c0,W,H),pa=proj(cam,a,W,H),pb=proj(cam,b,W,H);const z=(pa[0]-pc[0])*(pb[1]-pa[1])-(pa[1]-pc[1])*(pb[0]-pa[0]);return z>0?'clockwise':'anticlockwise'};
+  const probe=BEAMS[10];
+  document.getElementById('r5a').textContent=sense((dth,isC)=>isC?CTR:ceilingPt(probe,P5.theta+dth));
+  document.getElementById('r5b').textContent=showRefl?sense((dth,isC)=>{const P=isC?CTR:ceilingPt(probe,P5.theta+dth);return P?reflPt(cam.c,P):null}):(P5.inside?'not visible from inside':'hidden');
+  document.getElementById('r5cam').textContent=P5.inside?'inside the dome, looking up':'outside the dome'}
+const s5az=bind('s5az',P5,'az',x=>Math.round(((x%360)+360)%360)+'°','v5az',1,()=>{P5.inside=false});
+const s5el=bind('s5el',P5,'el',x=>Math.round(x)+'°','v5el',1,()=>{P5.inside=false});
+const s5dist=bind('s5dist',P5,'dist',x=>x.toFixed(1)+' R','v5dist',0.1,()=>{P5.inside=false});
+bind('s5speed',P5,'speed',x=>x.toFixed(1)+'×','v5speed',0.1);bind('s5trail',P5,'trail',x=>x+'°','v5trail');
+const setCam5=(az,el,dist)=>{P5.inside=false;s5az.set(az);s5el.set(el);s5dist.set(dist)};
+document.getElementById('b5his').addEventListener('click',()=>setCam5(35,8,3.2));
+document.getElementById('b5above').addEventListener('click',()=>setCam5(35,80,4.5));
+document.getElementById('b5low').addEventListener('click',()=>setCam5(60,6,2.2));
+document.getElementById('b5inside').addEventListener('click',()=>{P5.inside=true});
+const b5play=document.getElementById('b5play');b5play.addEventListener('click',()=>{P5.playing=!P5.playing;b5play.textContent=P5.playing?'Pause':'Play'});
+document.getElementById('k5refl').addEventListener('change',e=>{P5.refl=e.target.checked});
+document.getElementById('k5beams').addEventListener('change',e=>{P5.beams=e.target.checked});
+(function(){let drag=null;c5.style.touchAction='none';c5.style.cursor='grab';
+  c5.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,az:P5.az,el:P5.el};c5.setPointerCapture(e.pointerId)});
+  c5.addEventListener('pointermove',e=>{if(!drag)return;P5.inside=false;const k=0.4;s5az.set(((drag.az-(e.clientX-drag.x)*k)%360+360)%360);s5el.set(clamp(drag.el+(e.clientY-drag.y)*k,2,88))});
+  const end=()=>{drag=null};c5.addEventListener('pointerup',end);c5.addEventListener('pointercancel',end)})();
+
 /* ================= tabs, loop, resize ================= */
 let active='dome';
 const tabs=document.querySelectorAll('.tab');
 function showTab(name,push){active=name;tabs.forEach(t=>t.setAttribute('aria-selected',String(t.dataset.panel===name)));
-  for(const n of ['dome','fields','tenerife','spheres'])document.getElementById('panel-'+n).hidden=(n!==name);
-  if(name==='tenerife')scheduleRender3();else if(name==='fields')render2();else if(name==='spheres')render4();else render1();
+  for(const n of ['dome','fields','tenerife','spheres','mirror'])document.getElementById('panel-'+n).hidden=(n!==name);
+  if(name==='tenerife')scheduleRender3();else if(name==='fields')render2();else if(name==='spheres')render4();else if(name==='mirror')render5();else render1();
   if(push){try{history.replaceState(null,'','#'+name)}catch(e){}}}
 tabs.forEach(t=>t.addEventListener('click',()=>showTab(t.dataset.panel,true)));
-const h=(location.hash||'').replace('#','');if(['dome','fields','tenerife','spheres'].includes(h))showTab(h,false);else showTab('dome',false);
+const h=(location.hash||'').replace('#','');if(['dome','fields','tenerife','mirror'].includes(h))showTab(h,false);else showTab('dome',false);
 const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 if(reduce){P1.playing=false;P2.playing=false;b1play.textContent='Play';b2play.textContent='Play'}
 let last=performance.now();
@@ -560,6 +659,7 @@ function loop(now){const dt=Math.min(0.1,(now-last)/1000);last=now;
   else if(active==='fields'){if(P2.playing)P2.theta+=dt*0.25*P2.speed;render2()}
   else if(active==='spheres'){if(P4.tween){const tw=P4.tween;tw.t+=dt;const u=Math.min(1,tw.t/tw.secs);const e=u*u*(3-2*u);tw.setter(tw.from+(tw.to-tw.from)*e);if(u>=1){P4.tween=null;tw.res()}}
     if(P4.spin)s4gst.set((P4.gst+dt*0.08)%24);render4()}
+  else if(active==='mirror'){if(P5.playing)P5.theta+=dt*0.45*P5.speed;render5()}
   requestAnimationFrame(loop)}
 requestAnimationFrame(loop);
 window.addEventListener('resize',()=>{if(active==='tenerife')scheduleRender3()});
