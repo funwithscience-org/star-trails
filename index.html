@@ -313,6 +313,8 @@ footer{color:var(--muted);font-size:13px;max-width:78ch}
       <h2>Projector, mirror, dome</h2>
       <div class="btns"><button class="btn small" id="b5his">His tripod (13 Dec)</button><button class="btn small" id="b5close">His close-up (12 Dec)</button><button class="btn small" id="b5ceil">Tilt up to the ceiling</button><button class="btn small" id="b5le">His long exposure (12 Dec)</button><button class="btn small" id="b5above">From above (13 Dec, 9:17)</button><button class="btn small" id="b5low">Low, close</button><button class="btn small" id="b5inside">Inside, under the mirror</button><button class="btn small" id="b5side">Light paths, side view</button><button class="btn small" id="b5crop">Apply his 6:44 crop</button></div>
       <label class="check"><input type="checkbox" id="k5photo"> Match the footage: black room, white dots, phone framing</label>
+      <label class="check"><input type="checkbox" id="k5meteor" checked> Meteor: the projector's shooting star, drawn in every layer</label>
+      <div class="ctl"><div class="row"><label for="s5mdir">Meteor direction (room)</label><span class="val" id="v5mdir">0° (toward the projector's side)</span></div><input type="range" id="s5mdir" min="0" max="360" value="0"></div>
       <label class="check"><input type="checkbox" id="k5gears" checked> Seam arrows (measured on screen)</label>
       <label class="check"><input type="checkbox" id="k5gauge" checked> Camera-height gauge</label>
       <label class="check"><input type="checkbox" id="k5ghost"> Ghost: the sphere a full dome would need</label>
@@ -660,7 +662,7 @@ document.getElementById('b4all').addEventListener('click',()=>{s4cam.set(0);s4r.
 const c5=document.getElementById('c5'),g5=c5.getContext('2d');
 const P5={az:180,el:30,dist:2.9,tilt:-2,speed:1,trail:0,theta:0,playing:true,inside:false,
   px:16,pz:-0.4,hm:0.6,rm:0.66,mirror:true,mref:true,ceil:true,glass:true,map:true,fres:true,inner:false,beams:false,paths:false,plane:false,T:0.35,aim:0,cone:50,
-  gears:true,gauge:true,ghost:false,crop:false,photo:false,plain:false,colour:false,blocker:false,pan:0,roll:0,zoom:1,lookAt:null};
+  gears:true,gauge:true,ghost:false,crop:false,photo:false,plain:false,colour:false,blocker:false,meteor:true,mdir:0,mt:0,pan:0,roll:0,zoom:1,lookAt:null};
 window.__p5=P5;window.__dbg5=()=>{const cam=cam5();let n=0,m=0,ceilpts=[];for(const b of BEAMS){const sp=trace(b,P5.theta).find(x=>x.kind==='ceiling'&&!x.refl);if(!sp)continue;n++;ceilpts.push(sp.P);if(mirrorImage(cam.c,sp.P))m++}const xs=ceilpts.map(P=>P[0]),ys=ceilpts.map(P=>P[1]);return 'ceiling spots '+n+' x['+Math.min(...xs).toFixed(1)+','+Math.max(...xs).toFixed(1)+'] y['+Math.min(...ys).toFixed(1)+','+Math.max(...ys).toFixed(1)+'] mirrored '+m+' cam '+cam.c.map(v=>v.toFixed(2))};
 const PATHCOL=['240,179,91','225,235,255','255,143,156','120,220,255','200,160,255','255,220,120'];
 const HC=12.0,BASE_R=1.7;let PR=[1.6,0,-0.1];
@@ -672,7 +674,7 @@ const DIPPER=[[0,0],[7,2],[13,1],[19,-2],[24,-9],[31,-12],[36,-6]].map(q=>({rho:
 const BEAMS=(()=>{const r=rng(51);const out=DIPPER.slice();for(let i=0;i<620;i++){out.push({rho:Math.sqrt(r()),psi:r()*2*Math.PI,dip:false})}return out})();
 const BEAMS_DENSE=(()=>{const r=rng(77);const out=BEAMS.slice();for(let i=0;i<6000;i++){out.push({rho:Math.sqrt(r()),psi:r()*2*Math.PI,dip:false})}return out})();
 // axis: straight up, tilted by P5.aim degrees toward the dome centre (the -x direction from the projector)
-function beamDir(b,theta){const am=P5.aim*D;const A=[-Math.sin(am),0,Math.cos(am)];const E1=[0,1,0];const E2=cross(A,E1);const rho=(b.dip?b.rho:b.rho*P5.cone*D);const ps=b.psi+theta;const sr=Math.sin(rho),cr=Math.cos(rho),c=Math.cos(ps),sn=Math.sin(ps);return [cr*A[0]+sr*(c*E1[0]+sn*E2[0]),cr*A[1]+sr*(c*E1[1]+sn*E2[1]),cr*A[2]+sr*(c*E1[2]+sn*E2[2])]}
+function beamDir(b,theta){const am=P5.aim*D;const A=[-Math.sin(am),0,Math.cos(am)];const E1=[0,1,0];const E2=cross(A,E1);const rho=((b.dip||b.fixed)?b.rho:b.rho*P5.cone*D);const ps=b.fixed?b.psi:b.psi+theta;const sr=Math.sin(rho),cr=Math.cos(rho),c=Math.cos(ps),sn=Math.sin(ps);return [cr*A[0]+sr*(c*E1[0]+sn*E2[0]),cr*A[1]+sr*(c*E1[1]+sn*E2[1]),cr*A[2]+sr*(c*E1[2]+sn*E2[2])]}
 // trace one beam through the room: glass entry/exit, mirror (reflect + transmit), ceiling, map
 function trace(b,theta){const d0=beamDir(b,theta);const out=[];
   const run=(o,d,w,refl,depth)=>{for(let step=0;step<6;step++){let best=null;
@@ -767,6 +769,12 @@ function render5(){PR=[P5.px,0,P5.pz];const PH=P5.photo;const CL=PH&&P5.colour;
         for(let k=0;k<K;k++){if(!pts[k]||!pts[k+1])continue;const q0=proj(cam,pts[k],W,H),q1=proj(cam,pts[k+1],W,H);if(q0[2]>cull||q1[2]>cull)continue;const a=Math.min(1,wt*gain*fresnel(Math.abs(dot(pts[k+1],norm(sub(cam.c,pts[k+1]))))));g.strokeStyle='rgba('+col+','+(a*(PH&&K>3?0.3:0.8)*(k+1)/K)+')';g.lineWidth=sz*(PH&&K>3?0.45:0.8);g.beginPath();g.moveTo(q0[0],q0[1]);g.lineTo(q1[0],q1[1]);g.stroke()}
         const h=pts[K];if(!h)return;const q=proj(cam,h,W,H);if(q[2]>cull)return;const a=Math.min(1,wt*gain*fresnel(Math.abs(dot(h,norm(sub(cam.c,h))))));if(PH&&sz>4*dpr){const r=sz*0.6;const gr=g.createRadialGradient(q[0],q[1],0,q[0],q[1],r);gr.addColorStop(0,'rgba('+col+','+Math.min(1,a*0.5)+')');gr.addColorStop(0.7,'rgba('+col+','+Math.min(1,a*0.35)+')');gr.addColorStop(1,'rgba('+col+',0)');g.fillStyle=gr;g.beginPath();g.arc(q[0],q[1],r,0,2*Math.PI);g.fill();return}g.fillStyle='rgba('+col+','+a+')';g.beginPath();g.arc(q[0],q[1],sz*0.55,0,2*Math.PI);g.fill()};
       if(P5.fres)draw(reflPt,COL.B,PH?(CL?10:(P5.plain?6:0.55)):2.5);if(P5.inner)draw(innerPt,'120,220,255',6)}}
+  // the projector's shooting star: a streak from the axis outward in a fixed room direction, drawn in every layer it reaches
+  if(P5.meteor){const per=7,dur=1.5;const tm=P5.mt%per;if(tm<dur){const f=tm/dur;const N=18;const pc=[],pg=[],pm=[];
+      for(let i=0;i<=N;i++){const fr=f*i/N;const b={rho:fr*P5.cone*D,psi:(P5.mdir-90)*D,fixed:true};const c=trace(b,P5.theta).find(x=>x.kind==='ceiling'&&!x.refl);
+        if(!c){pc.push(null);pg.push(null);pm.push(null);continue}pc.push(c.P);const S=(!P5.inside&&P5.fres)?reflPt(cam.c,c.P):null;pg.push(S&&!blocked(c.P,S)?S:null);const X=(P5.mirror&&P5.mref)?mirrorImage(cam.c,c.P):null;pm.push(X&&!blocked(c.P,X)?X:null)}
+      const MC='255,220,120';const streak=(arr,wd)=>{const a=arr.filter(Boolean);if(a.length<2)return;g.strokeStyle='rgba('+MC+',0.95)';g.lineWidth=wd*dpr;g.lineCap='round';poly(g,cam,a,W,H,cull);const h=a[a.length-1];const q=proj(cam,h,W,H);if(q[2]<=cull){g.fillStyle='rgba('+MC+',1)';g.beginPath();g.arc(q[0],q[1],2.2*wd*dpr,0,2*Math.PI);g.fill()}};
+      if(P5.ceil)streak(pc,2.4);streak(pg,2.4);streak(pm,2.4)}}
   if(P5.paths){const sel=BEAMS.filter((b,i)=>{if(P5.plane){const d=beamDir(b,P5.theta);return Math.abs(d[1])<Math.sin(4*D)}return i%5===0});
     for(const b of sel){for(const sg of tracePaths(b,P5.theta)){const col=PATHCOL[Math.min(sg.n,PATHCOL.length-1)];const a=Math.min(1,0.9*sg.w)*(sg.dashed?0.6:1);g.strokeStyle='rgba('+col+','+a+')';g.lineWidth=(sg.dashed?1:1.6)*dpr;if(sg.dashed)g.setLineDash([3*dpr,4*dpr]);poly(g,cam,[sg.from,sg.to],W,H,cull);g.setLineDash([]);
         if(sg.end==='mirror'||sg.end==='glass'){const q=proj(cam,sg.to,W,H);if(q[2]<=cull){g.fillStyle='rgba('+PATHCOL[Math.min(sg.n+1,PATHCOL.length-1)]+',1)';g.beginPath();g.arc(q[0],q[1],2.2*dpr,0,2*Math.PI);g.fill()}}}}}
@@ -871,7 +879,7 @@ document.querySelectorAll('#story5 .btn').forEach(btn=>btn.addEventListener('cli
   document.getElementById('vt5').textContent=s.t;document.getElementById('vb5').textContent=s.b;document.getElementById('vs5').textContent='Clip: clips/'+s.clip+'.mp4 · source links under the stills below';
   const src='clips/'+s.clip+'.mp4';if(vid5.getAttribute('src')!==src){vid5.setAttribute('src',src);vid5.load()}if(P5._userShot)vid5.play().catch(()=>{});P5._userShot=true}));
 const setRig5=(hm,rm,px,pz,aim,cone)=>{for(const [id,v] of [['s5hm',Math.round(hm*100)],['s5rm',Math.round(rm*100)],['s5px',Math.round(px*100)],['s5pz',Math.round(pz*100)],['s5aim',aim],['s5cone',cone]]){const e=document.getElementById(id);e.value=v;e.dispatchEvent(new Event('input'))}};
-bind('s5aim',P5,'aim',x=>Math.round(x)+'° from vertical','v5aim');bind('s5cone',P5,'cone',x=>Math.round(x)+'° half-angle','v5cone');
+bind('s5mdir',P5,'mdir',x=>Math.round(x)+'°'+(Math.round(x)%360===0?' (toward the projector\'s side)':''),'v5mdir');bind('s5aim',P5,'aim',x=>Math.round(x)+'° from vertical','v5aim');bind('s5cone',P5,'cone',x=>Math.round(x)+'° half-angle','v5cone');
 document.getElementById('b5his').addEventListener('click',()=>{setRig5(0.68,0.55,1.6,-0.1,0,45);setCam5(35,8,3.2,0);setTrail5(20)});
 document.getElementById('b5close').addEventListener('click',()=>{setRig5(0.6,0.66,16,-0.4,0,64);setCam5(180,40,1.4,-8,0);setTrail5(0)});
 document.getElementById('b5ceil').addEventListener('click',()=>{setCam5(35,8,3.2,55);setTrail5(20)});
@@ -881,7 +889,7 @@ document.getElementById('b5low').addEventListener('click',()=>{setCam5(60,6,2.2,
 document.getElementById('b5inside').addEventListener('click',()=>{P5.inside=true;P5._force=true});
 document.getElementById('b5side').addEventListener('click',()=>{setCam5(90,6,3.4,14);setTrail5(0);for(const [id,v] of [['k5paths',true],['k5plane',true]]){const e=document.getElementById(id);e.checked=v;e.dispatchEvent(new Event('change'))}});
 const b5play=document.getElementById('b5play');b5play.addEventListener('click',()=>{P5.playing=!P5.playing;b5play.textContent=P5.playing?'Pause':'Play'});
-for(const [id,key] of [['k5mirror','mirror'],['k5mref','mref'],['k5paths','paths'],['k5plane','plane'],['k5ceil','ceil'],['k5glass','glass'],['k5map','map'],['k5fres','fres'],['k5beams','beams'],['k5gears','gears'],['k5gauge','gauge'],['k5ghost','ghost'],['k5photo','photo']])document.getElementById(id).addEventListener('change',e=>{P5[key]=e.target.checked});
+for(const [id,key] of [['k5mirror','mirror'],['k5mref','mref'],['k5paths','paths'],['k5plane','plane'],['k5ceil','ceil'],['k5glass','glass'],['k5map','map'],['k5fres','fres'],['k5beams','beams'],['k5gears','gears'],['k5gauge','gauge'],['k5ghost','ghost'],['k5photo','photo'],['k5meteor','meteor']])document.getElementById(id).addEventListener('change',e=>{P5[key]=e.target.checked});
 (function(){let drag=null;c5.style.touchAction='none';c5.style.cursor='grab';
   c5.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,az:P5.az,el:P5.el};c5.setPointerCapture(e.pointerId)});
   c5.addEventListener('pointermove',e=>{if(!drag)return;P5.inside=false;P5.orbit=false;P5.walk=null;P5.pan=0;if(P5.crop)uncrop5();const k=0.4;s5az.set(((drag.az-(e.clientX-drag.x)*k)%360+360)%360);s5el.set(clamp(drag.el+(e.clientY-drag.y)*k,2,88))});
@@ -907,7 +915,7 @@ function loop(now){const dt=Math.min(0.1,(now-last)/1000);last=now;
   else if(active==='fields'){if(P2.playing)P2.theta+=dt*0.25*P2.speed;render2()}
   else if(active==='spheres'){if(P4.tween){const tw=P4.tween;tw.t+=dt;const u=Math.min(1,tw.t/tw.secs);const e=u*u*(3-2*u);tw.setter(tw.from+(tw.to-tw.from)*e);if(u>=1){P4.tween=null;tw.res()}}
     if(P4.spin)s4gst.set((P4.gst+dt*0.08)%24);render4()}
-  else if(active==='mirror'){if(P5.playing)P5.theta+=dt*0.45*P5.speed;if(P5.orbit)s5az.set(((P5.az+dt*5)%360+360)%360);if(P5.walk){const w=P5.walk;w.t+=dt;const u=Math.min(1,w.t/9);const e=u*u*(3-2*u);s5dist.set(w.d0-(w.d0-1.45)*e);s5el.set(w.e0+16*e);s5tilt.set(-2+2*e);if(u>=1)P5.walk=null}render5()}
+  else if(active==='mirror'){if(P5.playing){P5.theta+=dt*0.45*P5.speed;P5.mt+=dt}if(P5.orbit)s5az.set(((P5.az+dt*5)%360+360)%360);if(P5.walk){const w=P5.walk;w.t+=dt;const u=Math.min(1,w.t/9);const e=u*u*(3-2*u);s5dist.set(w.d0-(w.d0-1.45)*e);s5el.set(w.e0+16*e);s5tilt.set(-2+2*e);if(u>=1)P5.walk=null}render5()}
   requestAnimationFrame(loop)}
 requestAnimationFrame(loop);
 window.addEventListener('resize',()=>{if(active==='tenerife')scheduleRender3()});
