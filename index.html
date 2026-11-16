@@ -1147,6 +1147,7 @@ function render6(){const {W,H,dpr}=fit(c6,1.7);const g=g6;g.setTransform(1,0,0,1
       if(limb.every(q=>q)){g.fillStyle='#0a0e17';g.beginPath();limb.forEach((q,i)=>i?g.lineTo(q[0],q[1]):g.moveTo(q[0],q[1]));g.closePath();g.fill();g.strokeStyle='rgba(150,175,220,0.5)';g.lineWidth=1*dpr;g.stroke()}
       const front=P=>dot(P,sub(cam.c,P))>0;g.lineWidth=1*dpr;
       for(const la of [-60,-30,0,30,60]){const cl=Math.cos(la*D),sl=Math.sin(la*D);g.strokeStyle='rgba(120,150,210,'+(la===0?0.55:0.22)+')';line6(g,cam,ring(120,a=>[cl*Math.cos(a),cl*Math.sin(a),sl]),W,H,front)}
+      if(near>0.3){const lo=Math.atan2(cam.c[1],cam.c[0])-0.95;for(const [la,t] of [[0,'equator'],[30,'30° N'],[60,'60° N'],[-30,'30° S']]){const Pl=[Math.cos(la*D)*Math.cos(lo),Math.cos(la*D)*Math.sin(lo),Math.sin(la*D)];if(front(Pl))label(Pl,t,'150,175,220',-8,near*0.85)}}
       g.strokeStyle='rgba(120,150,210,0.16)';for(let i=0;i<12;i++){const a=i*Math.PI/6;line6(g,cam,ring(72,t=>[Math.cos(t/2-Math.PI/2)*Math.cos(a),Math.cos(t/2-Math.PI/2)*Math.sin(a),Math.sin(t/2-Math.PI/2)]),W,H,front)}
       if(P6.guide){g.strokeStyle='rgba(240,179,91,0.6)';g.setLineDash([4*dpr,5*dpr]);line6(g,cam,[[0,0,1],[0,0,1.75]],W,H);line6(g,cam,[[0,0,-1],[0,0,-1.75]],W,H);g.setLineDash([]);label([0,0,1.85],'axis','240,179,91',0,near)}
       // the observer's own ground: a patch of the tangent plane, with north marked
