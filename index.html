@@ -109,6 +109,7 @@ footer{color:var(--muted);font-size:13px;max-width:78ch}
     <button class="tab" role="tab" id="tab-tenerife" aria-selected="false" data-panel="tenerife"><span class="n">3</span>Virtual Tenerife</button>
     <!-- Personal spheres (two observers) is parked: panel-spheres and its code remain below, unlinked. -->
     <button class="tab" role="tab" id="tab-mirror" aria-selected="false" data-panel="mirror"><span class="n">4</span>The mirror dome</button>
+    <button class="tab" role="tab" id="tab-below" aria-selected="false" data-panel="below"><span class="n">5</span>One sky, from below</button>
   </nav>
 
   <!-- ───────── Panel 1: the dome trick ───────── -->
@@ -365,6 +366,51 @@ footer{color:var(--muted);font-size:13px;max-width:78ch}
       <hr>
       <div class="legend"><span class="a">Ceiling, direct</span><span class="a">Ceiling reflected in the two-way mirror</span><span class="b">Ceiling reflected in the glass (outer surface)</span><span class="g">Direct beams on the glass, if the cone reaches it</span><span class="i">Map hot spots</span></div>
       <p class="cap">Geometry from the lit-room shots of 13 Dec and the dark frames of 12 Dec. The projector throws a cone of beams about its axis (aim and half-angle are sliders). Beams are traced through glass entry and exit (refraction neglected), mirror reflection and transmission (two-way, 50% reflect, 35% transmit), ceiling and map. Looking through the mirror dims what is behind it. Phone field of view 72°. You can drag on the picture to orbit.</p>
+    </aside>
+  </section>
+
+  <!-- ───────── Panel 6: one sky from below ───────── -->
+  <section class="panel" id="panel-below" role="tabpanel" hidden>
+    <div class="stage">
+      <canvas id="c6" aria-label="3D view of one rotating star field, over a flat plane with a dome or around a globe, with a camera that flies down to the ground"></canvas>
+      <div class="readout">
+        <span>model <b id="r6model">flat plane, one dome</b></span>
+        <span>camera <b id="r6cam">outside</b></span>
+        <span>trails in view: anticlockwise <b class="swA" id="r6ccw">—</b> · straight <b id="r6str">—</b><span id="r6tilt"></span> · clockwise <b class="swB" id="r6cw">—</b></span>
+      </div>
+      <div class="note" id="n6flat">
+        <span class="k">What to notice</span>
+        <p>This is the ordinary flat-earth sky: one star field on one dome, turning about the point above the north pole. Fly in and you are standing on the plane at Tenerife's place on the map. Now turn: north, east, south, west, tilt up, change the latitude, squash the dome. Every curved trail on screen stays the same colour, because every trail is a piece of a circle about that one point, seen from underneath. None ever turns the other way. The only ones that flatten are those skimming the horizon, where a circle is seen almost edge-on, and they lie along the horizon: nothing climbs straight out of it at a slant. No choice of where to stand or where to point the camera changes that. (From outside and above the whole field is the other colour: you are looking at the same rotation from its back, which is all tab 1’s trick ever was.)</p>
+      </div>
+      <div class="note" id="n6globe" hidden>
+        <span class="k">What to notice</span>
+        <p>Same single rotation, about one axis, but the stars are all around and the ground is a ball. From far away the trails already split: one colour north of the celestial equator, the other south of it, and straight along it. That is perspective, nothing more: you are looking at one turning sphere from inside it. Fly in to Tenerife facing east and the split is in front of you: trails on the left curl around a pole 28° up in the north, trails on the right curl the other way around a pole 28° below the southern horizon, and between them they run straight, climbing out of the horizon at 62°, which is 90° minus the latitude. Turn north and it is all one colour; turn south and it is all the other.</p>
+      </div>
+      <div class="note steel">
+        <span class="k">Their side of it</span>
+        <p id="n6their">A flat earther can reshape the dome freely, so the <b>Dome height</b> slider grants that, and <b>Polaris at the right height</b> sets it so the pole star sits at the elevation you would measure at this latitude. It can only be right for one latitude at a time, but leave that aside. The point here is narrower: whatever the dome's shape, one field seen from below has one centre and one sense.</p>
+      </div>
+    </div>
+    <aside class="controls">
+      <h2>One sky, two shapes</h2>
+      <div class="btns"><button class="btn on" id="b6flat">Flat plane, one dome</button><button class="btn" id="b6globe">Globe</button></div>
+      <div class="btns"><button class="btn" id="b6fly">Fly in</button><button class="btn" id="b6play">Pause</button></div>
+      <div class="ctl"><div class="row"><label for="s6head">Heading (on the ground)</label><span class="val" id="v6head">90°</span></div><input type="range" id="s6head" min="0" max="359" value="90"></div>
+      <div class="btns"><button class="btn small" data-h6="0">North</button><button class="btn small" data-h6="90">East</button><button class="btn small" data-h6="180">South</button><button class="btn small" data-h6="270">West</button></div>
+      <div class="ctl"><div class="row"><label for="s6pitch">Tilt up</label><span class="val" id="v6pitch">22°</span></div><input type="range" id="s6pitch" min="0" max="85" value="22"></div>
+      <div class="ctl"><div class="row"><label for="s6fov">Field of view</label><span class="val" id="v6fov">100°</span></div><input type="range" id="s6fov" min="50" max="125" value="100"></div>
+      <div class="ctl"><div class="row"><label for="s6lat">Latitude</label><span class="val" id="v6lat">28.3° N</span></div><input type="range" id="s6lat" min="-60" max="75" value="28.3" step="0.1"></div>
+      <div class="btns"><button class="btn small" data-l6="28.3">Tenerife</button><button class="btn small" data-l6="0">Equator</button><button class="btn small" data-l6="-33.9">Sydney</button></div>
+      <hr>
+      <div class="ctl"><div class="row"><label for="s6exp">Exposure</label><span class="val" id="v6exp">2 h</span></div><input type="range" id="s6exp" min="0" max="24" value="8"></div>
+      <div class="ctl"><div class="row"><label for="s6speed">Spin speed</label><span class="val" id="v6speed">1.0×</span></div><input type="range" id="s6speed" min="0" max="30" value="10"></div>
+      <div class="ctl" id="w6dome"><div class="row"><label for="s6dome">Dome height</label><span class="val" id="v6dome">1.00 R</span></div><input type="range" id="s6dome" min="12" max="100" value="100"></div>
+      <div class="btns" id="w6pol"><button class="btn small" id="b6pol">Polaris at the right height</button><button class="btn small" id="b6hemi">Hemisphere</button></div>
+      <label class="check"><input type="checkbox" id="k6col" checked> Colour trails by the way they turn on screen</label>
+      <label class="check"><input type="checkbox" id="k6guide" checked> Guides: poles, axis, celestial equator</label>
+      <hr>
+      <div class="legend"><span class="a">Turning anticlockwise on screen</span><span class="g">Straight</span><span class="b">Turning clockwise on screen</span></div>
+      <p class="cap">Drag on the picture: outside it orbits the camera, on the ground it looks around. The colour is measured from each trail as drawn, start, middle and end, not assigned by which star it is. A trail counts as straight when its bow is under 0.6% of its length, and on the ground the readout gives the average slant of the straight ones. Both models turn the sky east to west at the same rate; the ground is held still and the sky turns, which is the same relative motion either way.</p>
     </aside>
   </section>
 
@@ -1025,14 +1071,126 @@ for(const [id,key] of [['k5mirror','mirror'],['k5mref','mref'],['k5paths','paths
   const end=()=>{drag=null};c5.addEventListener('pointerup',end);c5.addEventListener('pointercancel',end)})();
 
 /* ================= tabs, loop, resize ================= */
+/* ================= PANEL 6: one sky from below ================= */
+const c6=document.getElementById('c6'),g6=c6.getContext('2d');
+const P6={model:'flat',fly:0,flyTarget:null,az:-38,el:24,dist:3.3,head:90,pitch:22,fov:100,lat:28.3,hours:2,speed:1,dome:1,theta:0,playing:true,col:true,guide:true};
+const SKY6=50;                                  // radius of the globe model's star sphere, in globe radii
+const ST6F=(()=>{const r=rng(61),o=[];for(let i=0;i<460;i++){const z=0.04+0.96*r(),ps=2*Math.PI*r(),s=Math.sqrt(1-z*z);o.push({rho:s,z,psi:ps,tint:r(),mag:r()})}return o})();
+const ST6G=(()=>{const r=rng(62),o=[];for(let i=0;i<1500;i++){const z=2*r()-1,ps=2*Math.PI*r();o.push({dec:Math.asin(z),ra:ps,tint:r(),mag:r()})}return o})();
+// where the observer stands and which way is up, north and east there
+function obs6(){const la=P6.lat*D;
+  if(P6.model==='flat'){const r=(90-P6.lat)/180;return {p:[r,0,0.004],up:[0,0,1],north:[-1,0,0],east:[0,1,0]}}
+  const up=[Math.cos(la),0,Math.sin(la)];return {p:[up[0]*1.0015,0,up[2]*1.0015],up,north:[-Math.sin(la),0,Math.cos(la)],east:[0,1,0]}}
+// the sky turns east to west: seen from above the north pole, clockwise
+function star6(s,th){if(P6.model==='flat'){const a=s.psi-th;return [s.rho*Math.cos(a),s.rho*Math.sin(a),P6.dome*s.z]}
+  const a=s.ra-th,cd=Math.cos(s.dec);return [SKY6*cd*Math.cos(a),SKY6*cd*Math.sin(a),SKY6*Math.sin(s.dec)]}
+function cam6(){const e=P6.fly*P6.fly*(3-2*P6.fly);const e2=clamp((P6.fly-0.3)/0.7,0,1),t2=e2*e2*(3-2*e2);const O=obs6();
+  const tgt=P6.model==='flat'?[0,0,0.22*P6.dome+0.08]:[0,0,0];
+  const ca=Math.cos(P6.az*D),sa=Math.sin(P6.az*D),ce=Math.cos(P6.el*D),se=Math.sin(P6.el*D);
+  const cOut=[tgt[0]+P6.dist*ce*ca,tgt[1]+P6.dist*ce*sa,tgt[2]+P6.dist*se];
+  let c;if(P6.model==='flat')c=lerp3(cOut,O.p,e);else{const d0=norm(cOut),d1=norm(O.p);const d=norm(lerp3(d0,d1,e));const rad=lerp(len(cOut),len(O.p),e);c=[d[0]*rad,d[1]*rad,d[2]*rad]}
+  const fOut=norm(sub(tgt,c));const h=P6.head*D,p=P6.pitch*D;
+  const fIn=[Math.cos(p)*(O.north[0]*Math.cos(h)+O.east[0]*Math.sin(h))+Math.sin(p)*O.up[0],Math.cos(p)*(O.north[1]*Math.cos(h)+O.east[1]*Math.sin(h))+Math.sin(p)*O.up[1],Math.cos(p)*(O.north[2]*Math.cos(h)+O.east[2]*Math.sin(h))+Math.sin(p)*O.up[2]];
+  const f=e>=1?fIn:norm(lerp3(fOut,fIn,t2));const upH=norm(lerp3([0,0,1],O.up,t2));
+  let r=cross(f,upH);if(len(r)<1e-4)r=cross(f,O.north);r=norm(r);const u=cross(r,f);
+  return {c,f,r,u,half:lerp((P6.model==='flat'?21:30)*D,P6.fov/2*D,t2),e,t2,O,upL:O.up}}
+function pj6(cam,P,W,H){const v=sub(P,cam.c);const z=dot(v,cam.f);if(z<0.0015)return null;const k=(W/2)/Math.tan(cam.half);return [W/2+dot(v,cam.r)/z*k,H/2-dot(v,cam.u)/z*k,z]}
+function pd6(cam,d,W,H){const z=dot(d,cam.f);if(z<0.02)return null;const k=(W/2)/Math.tan(cam.half);return [W/2+dot(d,cam.r)/z*k,H/2-dot(d,cam.u)/z*k]}
+function line6(g,cam,pts,W,H,vis){let pen=false;g.beginPath();for(const P of pts){const q=(vis&&!vis(P))?null:pj6(cam,P,W,H);if(!q){pen=false;continue}if(pen)g.lineTo(q[0],q[1]);else{g.moveTo(q[0],q[1]);pen=true}}g.stroke()}
+function render6(){const {W,H,dpr}=fit(c6,1.7);const g=g6;g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,W,H);
+  const mono=getComputedStyle(document.body).getPropertyValue('--mono');g.lineCap='round';g.lineJoin='round';g.textAlign='center';g.textBaseline='middle';
+  const flat=P6.model==='flat',cam=cam6(),O=cam.O,inside=cam.e>0.97,near=1-cam.t2;
+  g.fillStyle='#05070c';g.fillRect(0,0,W,H);
+  const label=(P,txt,col,dy,a)=>{const q=pj6(cam,P,W,H);if(!q||q[0]<-40||q[0]>W+40||q[1]<-20||q[1]>H+20)return;g.font='500 '+(11*dpr)+'px '+mono;g.fillStyle='rgba('+col+','+(a===undefined?0.9:a)+')';g.fillText(txt,q[0],q[1]+(dy||0)*dpr)};
+  const dotAt=(P,col,r,a)=>{const q=pj6(cam,P,W,H);if(!q)return;g.fillStyle='rgba('+col+','+(a===undefined?1:a)+')';g.beginPath();g.arc(q[0],q[1],r*dpr,0,7);g.fill()};
+  // the ground, as seen from where the camera is: a filled outline from outside, the horizon from on it
+  const ground=()=>{const up=cam.upL;let fh=sub(cam.f,[up[0]*dot(cam.f,up),up[1]*dot(cam.f,up),up[2]*dot(cam.f,up)]);if(len(fh)<0.05)return;fh=norm(fh);const rh=norm(cross(fh,up));
+    const A=pd6(cam,norm([fh[0]+rh[0]*0.7,fh[1]+rh[1]*0.7,fh[2]+rh[2]*0.7]),W,H),B=pd6(cam,norm([fh[0]-rh[0]*0.7,fh[1]-rh[1]*0.7,fh[2]-rh[2]*0.7]),W,H);if(!A||!B)return;
+    let dx=B[0]-A[0],dy=B[1]-A[1];const L=Math.hypot(dx,dy)||1;dx/=L;dy/=L;const big=4*(W+H);let nx=-dot(up,cam.r),ny=dot(up,cam.u);const nl=Math.hypot(nx,ny)||1;nx/=nl;ny/=nl;
+    const a0=[A[0]-dx*big,A[1]-dy*big],b0=[A[0]+dx*big,A[1]+dy*big];
+    g.fillStyle='#0a0e17';g.beginPath();g.moveTo(a0[0],a0[1]);g.lineTo(b0[0],b0[1]);g.lineTo(b0[0]+nx*big,b0[1]+ny*big);g.lineTo(a0[0]+nx*big,a0[1]+ny*big);g.closePath();g.fill();
+    g.strokeStyle='rgba(150,175,220,0.35)';g.lineWidth=1*dpr;g.beginPath();g.moveTo(a0[0],a0[1]);g.lineTo(b0[0],b0[1]);g.stroke()};
+  const ring=(n,fn)=>{const o=[];for(let i=0;i<=n;i++)o.push(fn(i/n*2*Math.PI));return o};
+  // ---- stars and their trails, coloured by how each one turns on the screen ----
+  const tr=P6.hours*15*D,K=Math.max(2,Math.ceil(tr/(2.5*D))),STARS=flat?ST6F:ST6G;let nA=0,nS=0,nC=0,tiltSum=0,tiltN=0;
+  const onGround=P=>dot(sub(P,O.p),O.up)>0;const hz=inside?H/2+Math.tan(P6.pitch*D)*(W/2)/Math.tan(cam.half):0;
+  const stars=()=>{for(const s of STARS){const pts=[];let ok=true;for(let k=0;k<=K;k++){const P=star6(s,P6.theta-tr*(1-k/K));if(inside&&!flat&&!onGround(P)){ok=false;break}const q=pj6(cam,P,W,H);if(!q){ok=false;break}pts.push(q)}
+      if(!ok)continue;const a=pts[0],m=pts[K>>1],b=pts[K];const inV=m[0]>0&&m[0]<W&&m[1]>0&&m[1]<H&&(!hz||m[1]<hz);let cls=0;
+      if(tr>0.02){const cx=b[0]-a[0],cy=b[1]-a[1],ch=Math.hypot(cx,cy);if(ch>3*dpr){const sag=((m[0]-a[0])*cy-(m[1]-a[1])*cx)/ch;cls=Math.abs(sag)/ch<0.006?0:(sag>0?1:-1);if(cls===0&&inV){tiltSum+=Math.atan2(Math.abs(cy),Math.abs(cx))*R2D;tiltN++}}}
+      if(inV&&tr>0.02){if(cls===0)nS++;else if(cls>0)nC++;else nA++}
+      const col=!P6.col||tr<=0.02?tintOf(s.tint):(cls===0?'240,244,255':(cls>0?COL.B:COL.A));const al=0.35+0.55*s.mag;
+      if(tr>0.02){g.strokeStyle='rgba('+col+','+(al*0.75)+')';g.lineWidth=(0.8+0.5*s.mag)*dpr;g.beginPath();g.moveTo(pts[0][0],pts[0][1]);for(let k=1;k<=K;k++)g.lineTo(pts[k][0],pts[k][1]);g.stroke()}
+      g.fillStyle='rgba('+col+','+Math.min(1,al+0.2)+')';g.beginPath();g.arc(b[0],b[1],(0.9+0.8*s.mag)*dpr,0,7);g.fill()}};
+  if(flat){
+    // the plane: north pole at the centre, latitudes as rings, the rim where the dome comes down
+    const rim=ring(96,a=>[Math.cos(a),Math.sin(a),0]).map(P=>pj6(cam,P,W,H));
+    if(rim.every(q=>q)){g.fillStyle='#0a0e17';g.beginPath();rim.forEach((q,i)=>i?g.lineTo(q[0],q[1]):g.moveTo(q[0],q[1]));g.closePath();g.fill()}else ground();
+    g.lineWidth=1*dpr;for(const la of [60,30,0,-30,-60,-90]){const r=(90-la)/180;g.strokeStyle='rgba(120,150,210,'+(la===0?0.5:(la===-90?0.55:0.2))+')';line6(g,cam,ring(144,a=>[r*Math.cos(a),r*Math.sin(a),0]),W,H)}
+    g.strokeStyle='rgba(120,150,210,0.14)';for(let i=0;i<12;i++){const a=i*Math.PI/6;line6(g,cam,[0,0.25,0.5,0.75,1].map(t=>[t*Math.cos(a),t*Math.sin(a),0]),W,H)}
+    // the dome, faint
+    g.strokeStyle='rgba(150,175,220,'+(0.10+0.12*near)+')';for(let i=0;i<6;i++){const a=i*Math.PI/6;line6(g,cam,ring(48,t=>[Math.cos(a)*Math.cos(t/2),Math.sin(a)*Math.cos(t/2),P6.dome*Math.sin(t/2)]),W,H)}
+    if(P6.guide){g.strokeStyle='rgba(240,179,91,0.45)';g.setLineDash([4*dpr,5*dpr]);line6(g,cam,[[0,0,0],[0,0,P6.dome]],W,H);g.setLineDash([]);dotAt([0,0,P6.dome],'240,179,91',3.5);label([0,0,P6.dome],inside?'the one centre':'above the north pole','240,179,91',-13)}
+    stars();
+    dotAt([O.p[0],0,0],'255,255,255',3*near+0.01,near);if(near>0.3){label([O.p[0],0,0],P6.lat===28.3?'Tenerife':'observer','225,235,255',14,near);label([0,0,0],'N pole','150,175,220',12,near*0.8);label([0.5*Math.cos(2.2),0.5*Math.sin(2.2),0],'equator','150,175,220',-9,near*0.8)}
+  }else{
+    const dC=len(cam.c);
+    if(P6.guide){g.strokeStyle='rgba(240,244,255,0.28)';g.lineWidth=1*dpr;g.setLineDash([5*dpr,6*dpr]);line6(g,cam,ring(180,a=>[SKY6*Math.cos(a),SKY6*Math.sin(a),0]),W,H,inside?onGround:null);g.setLineDash([])}
+    stars();
+    if(P6.guide){for(const [z,t] of [[1,'north celestial pole'],[-1,'south celestial pole']]){const Pp=[0,0,z*SKY6];if(inside&&!onGround(Pp))continue;dotAt(Pp,'240,179,91',3.5);label(Pp,t,'240,179,91',-13)}
+      {const a=Math.atan2(cam.f[1],cam.f[0]);const Pe=[SKY6*Math.cos(a),SKY6*Math.sin(a),0];if(!inside||onGround(Pe))label(Pe,'celestial equator','240,244,255',-10,0.6)}}
+    if(dC<1.06)ground();
+    else{const k=1/dC,rr=Math.sqrt(1-k*k),cd=norm(cam.c);let e1=cross(cd,[0,0,1]);if(len(e1)<1e-3)e1=[1,0,0];e1=norm(e1);const e2=cross(cd,e1);
+      const limb=ring(96,a=>[cd[0]*k+rr*(e1[0]*Math.cos(a)+e2[0]*Math.sin(a)),cd[1]*k+rr*(e1[1]*Math.cos(a)+e2[1]*Math.sin(a)),cd[2]*k+rr*(e1[2]*Math.cos(a)+e2[2]*Math.sin(a))]).map(P=>pj6(cam,P,W,H));
+      if(limb.every(q=>q)){g.fillStyle='#0a0e17';g.beginPath();limb.forEach((q,i)=>i?g.lineTo(q[0],q[1]):g.moveTo(q[0],q[1]));g.closePath();g.fill();g.strokeStyle='rgba(150,175,220,0.5)';g.lineWidth=1*dpr;g.stroke()}
+      const front=P=>dot(P,sub(cam.c,P))>0;g.lineWidth=1*dpr;
+      for(const la of [-60,-30,0,30,60]){const cl=Math.cos(la*D),sl=Math.sin(la*D);g.strokeStyle='rgba(120,150,210,'+(la===0?0.55:0.22)+')';line6(g,cam,ring(120,a=>[cl*Math.cos(a),cl*Math.sin(a),sl]),W,H,front)}
+      g.strokeStyle='rgba(120,150,210,0.16)';for(let i=0;i<12;i++){const a=i*Math.PI/6;line6(g,cam,ring(72,t=>[Math.cos(t/2-Math.PI/2)*Math.cos(a),Math.cos(t/2-Math.PI/2)*Math.sin(a),Math.sin(t/2-Math.PI/2)]),W,H,front)}
+      if(P6.guide){g.strokeStyle='rgba(240,179,91,0.6)';g.setLineDash([4*dpr,5*dpr]);line6(g,cam,[[0,0,1],[0,0,1.75]],W,H);line6(g,cam,[[0,0,-1],[0,0,-1.75]],W,H);g.setLineDash([]);label([0,0,1.85],'axis','240,179,91',0,near)}
+      // the observer's own ground: a patch of the tangent plane, with north marked
+      const up=O.up,Pm=[up[0]*1.002,0,up[2]*1.002];if(front(Pm)&&near>0.05){g.strokeStyle='rgba(255,255,255,'+(0.75*near)+')';g.lineWidth=1.2*dpr;line6(g,cam,ring(48,a=>[Pm[0]+0.2*(O.north[0]*Math.cos(a)+O.east[0]*Math.sin(a)),Pm[1]+0.2*(O.north[1]*Math.cos(a)+O.east[1]*Math.sin(a)),Pm[2]+0.2*(O.north[2]*Math.cos(a)+O.east[2]*Math.sin(a))]),W,H);
+        line6(g,cam,[Pm,[Pm[0]+up[0]*0.28,Pm[1],Pm[2]+up[2]*0.28]],W,H);dotAt(Pm,'255,255,255',3,near);label([Pm[0]+up[0]*0.36,0,Pm[2]+up[2]*0.36],P6.lat===28.3?'Tenerife: its "up"':'observer: their "up"','225,235,255',0,near);label([Pm[0]+O.north[0]*0.27,0,Pm[2]+O.north[2]*0.27],'N','225,235,255',0,near)}}
+  }
+  // compass along the horizon once the camera is down
+  if(cam.t2>0.6){const a=(cam.t2-0.6)/0.4;g.font='600 '+(12*dpr)+'px '+mono;for(const [nm,hd] of [['N',0],['NE',45],['E',90],['SE',135],['S',180],['SW',225],['W',270],['NW',315]]){const h=hd*D;const d=[O.north[0]*Math.cos(h)+O.east[0]*Math.sin(h),O.north[1]*Math.cos(h)+O.east[1]*Math.sin(h),O.north[2]*Math.cos(h)+O.east[2]*Math.sin(h)];const q=pd6(cam,d,W,H);if(!q||q[0]<10||q[0]>W-10)continue;
+      g.fillStyle='rgba(240,179,91,'+(nm.length===1?0.95:0.55)*a+')';g.fillText(nm,q[0],q[1]+13*dpr);g.fillRect(q[0]-0.5*dpr,q[1]-4*dpr,1*dpr,8*dpr)}}
+  document.getElementById('r6model').textContent=flat?'flat plane, one dome':'globe';
+  document.getElementById('r6cam').textContent=inside?('on the ground at '+Math.abs(P6.lat).toFixed(1)+'° '+(P6.lat<0?'S':'N')+', looking '+compass(P6.head)):(cam.e>0.02?'flying':'outside');
+  const none=tr<=0.02;document.getElementById('r6ccw').textContent=none?'—':nA;document.getElementById('r6str').textContent=none?'—':nS;document.getElementById('r6tilt').textContent=(!none&&inside&&tiltN)?' (lying '+Math.round(tiltSum/tiltN)+'° from the horizon)':'';document.getElementById('r6cw').textContent=none?'—':nC}
+const s6head=bind('s6head',P6,'head',x=>Math.round(((x%360)+360)%360)+'°','v6head');
+const s6pitch=bind('s6pitch',P6,'pitch',x=>Math.round(x)+'°','v6pitch');
+bind('s6fov',P6,'fov',x=>Math.round(x)+'°','v6fov');
+const s6lat=bind('s6lat',P6,'lat',x=>Math.abs(x).toFixed(1)+'° '+(x<0?'S':'N'),'v6lat');
+bind('s6exp',P6,'hours',x=>x.toFixed(2).replace(/\.?0+$/,'')+' h','v6exp',0.25);
+bind('s6speed',P6,'speed',x=>x.toFixed(1)+'×','v6speed',0.1);
+const s6dome=bind('s6dome',P6,'dome',x=>x.toFixed(2)+' R','v6dome',0.01);
+document.querySelectorAll('[data-h6]').forEach(b=>b.addEventListener('click',()=>s6head.set(+b.dataset.h6)));
+document.querySelectorAll('[data-l6]').forEach(b=>b.addEventListener('click',()=>s6lat.set(+b.dataset.l6)));
+const b6flat=document.getElementById('b6flat'),b6globe=document.getElementById('b6globe'),b6fly=document.getElementById('b6fly');
+function setModel6(m){P6.model=m;b6flat.classList.toggle('on',m==='flat');b6globe.classList.toggle('on',m==='globe');document.getElementById('n6flat').hidden=m!=='flat';document.getElementById('n6globe').hidden=m!=='globe';
+  document.getElementById('w6dome').hidden=m!=='flat';document.getElementById('w6pol').hidden=m!=='flat';
+  if(m==='flat'){if(P6.fly<0.5){P6.az=-38;P6.el=24;P6.dist=3.3}}else if(P6.fly<0.5){P6.az=-34;P6.el=7;P6.dist=3.6}
+  document.getElementById('n6their').innerHTML=m==='flat'?'A flat earther can reshape the dome freely, so the <b>Dome height</b> slider grants that, and <b>Polaris at the right height</b> sets it so the pole star sits at the elevation you would measure at this latitude. It can only be right for one latitude at a time, but leave that aside. The point here is narrower: whatever the dome’s shape, one field seen from below has one centre and one sense.':'The usual reply is that the globe picture needs a second pole that nobody in the north can see. Slide the latitude to Sydney: the pole that was under the southern horizon is now up in the south and the trails turn clockwise around it, with no second projector and no change to the rotation. Do the same on the flat plane and the one centre just moves lower in the north.'}
+b6flat.addEventListener('click',()=>setModel6('flat'));b6globe.addEventListener('click',()=>setModel6('globe'));
+b6fly.addEventListener('click',()=>{if(P6.fly<0.5){s6head.set(90);s6pitch.set(22);P6.flyTarget=1}else P6.flyTarget=0});
+const b6play=document.getElementById('b6play');b6play.addEventListener('click',()=>{P6.playing=!P6.playing;b6play.textContent=P6.playing?'Pause':'Play'});
+document.getElementById('b6pol').addEventListener('click',()=>{const r=(90-P6.lat)/180;s6dome.set(clamp(r*Math.tan(Math.max(1,P6.lat)*D),0.12,1))});
+document.getElementById('b6hemi').addEventListener('click',()=>s6dome.set(1));
+document.getElementById('k6col').addEventListener('change',e=>{P6.col=e.target.checked});
+document.getElementById('k6guide').addEventListener('change',e=>{P6.guide=e.target.checked});
+{let drag=null;c6.style.cursor='grab';c6.style.touchAction='none';
+  c6.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,az:P6.az,el:P6.el,h:P6.head,p:P6.pitch};c6.setPointerCapture(e.pointerId);c6.style.cursor='grabbing'});
+  c6.addEventListener('pointermove',e=>{if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(P6.fly>0.5){s6head.set((((drag.h-dx*0.18)%360)+360)%360);s6pitch.set(clamp(drag.p+dy*0.15,0,85))}else{P6.az=drag.az-dx*0.35;P6.el=clamp(drag.el+dy*0.25,P6.model==='flat'?4:-70,80)}});
+  const end=()=>{drag=null;c6.style.cursor='grab'};c6.addEventListener('pointerup',end);c6.addEventListener('pointercancel',end)}
+setModel6('flat');
+
 let active='dome';
 const tabs=document.querySelectorAll('.tab');
 function showTab(name,push){active=name;tabs.forEach(t=>t.setAttribute('aria-selected',String(t.dataset.panel===name)));
-  for(const n of ['dome','fields','tenerife','spheres','mirror'])document.getElementById('panel-'+n).hidden=(n!==name);
-  if(name==='tenerife')scheduleRender3();else if(name==='fields')render2();else if(name==='spheres')render4();else if(name==='mirror'){if(!P5._shot){P5._shot=true;const b=document.querySelector('#story5 .btn[data-shot="open"]');if(b)b.click()}render5()}else render1();
+  for(const n of ['dome','fields','tenerife','spheres','mirror','below'])document.getElementById('panel-'+n).hidden=(n!==name);
+  if(name==='tenerife')scheduleRender3();else if(name==='fields')render2();else if(name==='spheres')render4();else if(name==='mirror'){if(!P5._shot){P5._shot=true;const b=document.querySelector('#story5 .btn[data-shot="open"]');if(b)b.click()}render5()}else if(name==='below')render6();else render1();
   if(push){try{history.replaceState(null,'','#'+name)}catch(e){}}}
 tabs.forEach(t=>t.addEventListener('click',()=>showTab(t.dataset.panel,true)));
-const h=(location.hash||'').replace('#','');if(['dome','fields','tenerife','mirror'].includes(h))showTab(h,false);else showTab('dome',false);
+const h=(location.hash||'').replace('#','');if(['dome','fields','tenerife','mirror','below'].includes(h))showTab(h,false);else showTab('dome',false);
 const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 if(reduce){P1.playing=false;P2.playing=false;b1play.textContent='Play';b2play.textContent='Play'}
 let last=performance.now();
@@ -1045,6 +1203,7 @@ function loop(now){const dt=Math.min(0.1,(now-last)/1000);last=now;
   else if(active==='spheres'){if(P4.tween){const tw=P4.tween;tw.t+=dt;const u=Math.min(1,tw.t/tw.secs);const e=u*u*(3-2*u);tw.setter(tw.from+(tw.to-tw.from)*e);if(u>=1){P4.tween=null;tw.res()}}
     if(P4.spin)s4gst.set((P4.gst+dt*0.08)%24);render4()}
   else if(active==='mirror'){if(P5.playing){P5.theta+=dt*0.45*P5.speed;P5.mt+=dt}if(P5.orbit)s5az.set(((P5.az+dt*5)%360+360)%360);if(P5.walk){const w=P5.walk;if(!w.start)w.start=performance.now()-w.t*1000;w.t=(performance.now()-w.start)/1000;const u=Math.min(1,w.t/(w.dur||9));const e=u*u*(3-2*u);s5dist.set(w.d0+(w.d1-w.d0)*e);s5el.set(w.e0+(w.e1-w.e0)*e);s5tilt.set(w.t0+(w.t1-w.t0)*e);if(w.a1!==undefined)s5az.set(w.a0+(w.a1-w.a0)*e);if(u>=1)P5.walk=null}render5()}
+  else if(active==='below'){if(P6.playing)P6.theta+=dt*0.22*P6.speed;if(P6.flyTarget!==null){const dir=Math.sign(P6.flyTarget-P6.fly);const nv=P6.fly+dir*dt/4.5;if(dir===0||(dir>0&&nv>=P6.flyTarget)||(dir<0&&nv<=P6.flyTarget)){P6.fly=P6.flyTarget;P6.flyTarget=null}else P6.fly=nv}b6fly.textContent=P6.fly<0.5?'Fly in':'Fly out';render6()}
   requestAnimationFrame(loop)}
 requestAnimationFrame(loop);
 window.addEventListener('resize',()=>{if(active==='tenerife')scheduleRender3()});
