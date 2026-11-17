@@ -393,7 +393,7 @@ footer{color:var(--muted);font-size:13px;max-width:78ch}
     </div>
     <aside class="controls">
       <h2>One sky, two shapes</h2>
-      <div class="btns"><button class="btn on" id="b6flat">Stars on the dome</button><button class="btn" id="b6disk">Stars on a disk above the dome</button><button class="btn" id="b6globe">Globe</button></div>
+      <div class="btns"><button class="btn on" id="b6flat">Stars on the dome</button><button class="btn" id="b6disk">Stars on a disk above the dome</button><button class="btn" id="b6fan">A ceiling fan</button><button class="btn" id="b6globe">Globe</button></div>
       <div class="btns"><button class="btn" id="b6fly">Fly in</button><button class="btn" id="b6play">Pause</button></div>
       <div class="ctl"><div class="row"><label for="s6head">Heading (on the ground)</label><span class="val" id="v6head">90°</span></div><input type="range" id="s6head" min="0" max="359" value="90"></div>
       <div class="btns"><button class="btn small" data-h6="0">North</button><button class="btn small" data-h6="90">East</button><button class="btn small" data-h6="180">South</button><button class="btn small" data-h6="270">West</button></div>
@@ -1076,23 +1076,26 @@ for(const [id,key] of [['k5mirror','mirror'],['k5mref','mref'],['k5paths','paths
 /* ================= PANEL 6: one sky from below ================= */
 const c6=document.getElementById('c6'),g6=c6.getContext('2d');
 const P6={dsize:6,model:'flat',fly:0,flyTarget:null,az:-38,el:24,dist:3.3,head:90,pitch:22,fov:100,lat:28.3,hours:2,speed:1,dome:1,theta:0,playing:true,col:true,guide:true};
-const DISK6=1.12;const DOME6={flat:1,disk:0.45};const isFlat6=()=>P6.model!=='globe';const SKY6=50;                                  // radius of the globe model's star sphere, in globe radii
+const DISK6=1.12;const DOME6={flat:1,disk:0.45,fan:0.45};const isDisk6=()=>P6.model==='disk'||P6.model==='fan';const isFlat6=()=>P6.model!=='globe';const SKY6=50;                                  // radius of the globe model's star sphere, in globe radii
 const ST6F=(()=>{const r=rng(61),o=[];for(let i=0;i<460;i++){const z=0.04+0.96*r(),ps=2*Math.PI*r(),s=Math.sqrt(1-z*z);o.push({rho:s,z,psi:ps,tint:r(),mag:r()})}return o})();
 // the disk's stars: spread evenly in distance from the centre, as a fraction of the disk's radius, so there are still plenty overhead when the disk is made wide
 const ST6D=(()=>{const r=rng(63),o=[];for(let i=0;i<1700;i++){o.push({rho:0.01+0.99*r(),z:1,psi:2*Math.PI*r(),tint:r(),mag:r()})}return o})();
+const FAN6={n:5,r0:0.06,w0:0.045,w1:0.1,hub:0.04};
+const fanW6=f=>FAN6.w0+(FAN6.w1-FAN6.w0)*(f-FAN6.r0)/(1-FAN6.r0);
+const ST6FAN=(()=>{const o=[];for(let b=0;b<FAN6.n;b++){const ph=b*2*Math.PI/FAN6.n;for(const f of [0.2,0.32,0.44,0.56,0.68,0.8,0.9,1])for(const sg of [-1,0,1]){if(sg===0&&f<1)continue;const w=sg*fanW6(f);o.push({rho:Math.hypot(f,w),z:1,psi:ph+Math.atan2(w,f),tint:0.5,mag:f>=1?1:0.55})}}return o})();
 const ST6G=(()=>{const r=rng(62),o=[];for(let i=0;i<1500;i++){const z=2*r()-1,ps=2*Math.PI*r();o.push({dec:Math.asin(z),ra:ps,tint:r(),mag:r()})}return o})();
 // where the observer stands and which way is up, north and east there
 function obs6(){const la=P6.lat*D;
   if(isFlat6()){const r=(90-P6.lat)/180;return {p:[r,0,0.004],up:[0,0,1],north:[-1,0,0],east:[0,1,0]}}
   const up=[Math.cos(la),0,Math.sin(la)];return {p:[up[0]*1.0015,0,up[2]*1.0015],up,north:[-Math.sin(la),0,Math.cos(la)],east:[0,1,0]}}
 // the sky turns east to west: seen from above the north pole, clockwise
-function star6(s,th){if(P6.model==='disk'){const a=s.psi-th,q=s.rho*P6.dsize;return [q*Math.cos(a),q*Math.sin(a),P6.dome*DISK6]}
+function star6(s,th){if(isDisk6()){const a=s.psi-th,q=s.rho*P6.dsize;return [q*Math.cos(a),q*Math.sin(a),P6.dome*DISK6]}
   if(P6.model==='flat'){const a=s.psi-th;return [s.rho*Math.cos(a),s.rho*Math.sin(a),P6.dome*s.z]}
   const a=s.ra-th,cd=Math.cos(s.dec);return [SKY6*cd*Math.cos(a),SKY6*cd*Math.sin(a),SKY6*Math.sin(s.dec)]}
 function cam6(){const e=P6.fly*P6.fly*(3-2*P6.fly);const e2=clamp((P6.fly-0.3)/0.7,0,1),t2=e2*e2*(3-2*e2);const O=obs6();
-  const tgt=isFlat6()?[0,0,(P6.model==='disk'?0.42*P6.dome*DISK6:0.22*P6.dome)+0.08]:[0,0,0];
+  const tgt=isFlat6()?[0,0,(isDisk6()?0.42*P6.dome*DISK6:0.22*P6.dome)+0.08]:[0,0,0];
   const ca=Math.cos(P6.az*D),sa=Math.sin(P6.az*D),ce=Math.cos(P6.el*D),se=Math.sin(P6.el*D);
-  const dK=P6.dist*(P6.model==='disk'?Math.max(1,0.62*P6.dsize+0.3):1);const cOut=[tgt[0]+dK*ce*ca,tgt[1]+dK*ce*sa,tgt[2]+dK*se];
+  const dK=P6.dist*(isDisk6()?Math.max(1,(P6.model==='fan'?0.82:0.62)*P6.dsize+0.3):1);const cOut=[tgt[0]+dK*ce*ca,tgt[1]+dK*ce*sa,tgt[2]+dK*se];
   let c;if(isFlat6())c=lerp3(cOut,O.p,e);else{const d0=norm(cOut),d1=norm(O.p);const d=norm(lerp3(d0,d1,e));const rad=lerp(len(cOut),len(O.p),e);c=[d[0]*rad,d[1]*rad,d[2]*rad]}
   const fOut=norm(sub(tgt,c));const h=P6.head*D,p=P6.pitch*D;
   const fIn=[Math.cos(p)*(O.north[0]*Math.cos(h)+O.east[0]*Math.sin(h))+Math.sin(p)*O.up[0],Math.cos(p)*(O.north[1]*Math.cos(h)+O.east[1]*Math.sin(h))+Math.sin(p)*O.up[1],Math.cos(p)*(O.north[2]*Math.cos(h)+O.east[2]*Math.sin(h))+Math.sin(p)*O.up[2]];
@@ -1104,7 +1107,7 @@ function pd6(cam,d,W,H){const z=dot(d,cam.f);if(z<0.02)return null;const k=(W/2)
 function line6(g,cam,pts,W,H,vis){let pen=false;g.beginPath();for(const P of pts){const q=(vis&&!vis(P))?null:pj6(cam,P,W,H);if(!q){pen=false;continue}if(pen)g.lineTo(q[0],q[1]);else{g.moveTo(q[0],q[1]);pen=true}}g.stroke()}
 function render6(){const {W,H,dpr}=fit(c6,1.7);const g=g6;g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,W,H);
   const mono=getComputedStyle(document.body).getPropertyValue('--mono');g.lineCap='round';g.lineJoin='round';g.textAlign='center';g.textBaseline='middle';
-  const flat=isFlat6(),disk=P6.model==='disk',top=P6.dome*(disk?DISK6:1),cam=cam6(),O=cam.O,inside=cam.e>0.97,near=1-cam.t2;
+  const flat=isFlat6(),disk=isDisk6(),fan=P6.model==='fan',top=P6.dome*(disk?DISK6:1),cam=cam6(),O=cam.O,inside=cam.e>0.97,near=1-cam.t2;
   g.fillStyle='#05070c';g.fillRect(0,0,W,H);
   const label=(P,txt,col,dy,a)=>{const q=pj6(cam,P,W,H);if(!q||q[0]<-40||q[0]>W+40||q[1]<-20||q[1]>H+20)return;g.font='500 '+(11*dpr)+'px '+mono;g.fillStyle='rgba('+col+','+(a===undefined?0.9:a)+')';g.fillText(txt,q[0],q[1]+(dy||0)*dpr)};
   const dotAt=(P,col,r,a)=>{const q=pj6(cam,P,W,H);if(!q)return;g.fillStyle='rgba('+col+','+(a===undefined?1:a)+')';g.beginPath();g.arc(q[0],q[1],r*dpr,0,7);g.fill()};
@@ -1117,7 +1120,7 @@ function render6(){const {W,H,dpr}=fit(c6,1.7);const g=g6;g.setTransform(1,0,0,1
     g.strokeStyle='rgba(150,175,220,0.35)';g.lineWidth=1*dpr;g.beginPath();g.moveTo(a0[0],a0[1]);g.lineTo(b0[0],b0[1]);g.stroke()};
   const ring=(n,fn)=>{const o=[];for(let i=0;i<=n;i++)o.push(fn(i/n*2*Math.PI));return o};
   // ---- stars and their trails, coloured by how each one turns on the screen ----
-  const tr=P6.hours*15*D,K=Math.max(2,Math.ceil(tr/(2.5*D))),STARS=disk?ST6D:(flat?ST6F:ST6G);let nA=0,nS=0,nC=0,tiltSum=0,tiltN=0;
+  const tr=P6.hours*15*D,K=Math.max(2,Math.ceil(tr/(2.5*D))),STARS=fan?ST6FAN:(disk?ST6D:(flat?ST6F:ST6G));let nA=0,nS=0,nC=0,tiltSum=0,tiltN=0;
   const onGround=P=>dot(sub(P,O.p),O.up)>0;const hz=inside?H/2+Math.tan(P6.pitch*D)*(W/2)/Math.tan(cam.half):0;
   const stars=()=>{for(const s of STARS){const pts=[];let ok=true;for(let k=0;k<=K;k++){const P=star6(s,P6.theta-tr*(1-k/K));if(inside&&!flat&&!onGround(P)){ok=false;break}const q=pj6(cam,P,W,H);if(!q){ok=false;break}pts.push(q)}
       if(!ok)continue;const a=pts[0],m=pts[K>>1],b=pts[K];const inV=m[0]>0&&m[0]<W&&m[1]>0&&m[1]<H&&(!hz||m[1]<hz);let cls=0;
@@ -1134,7 +1137,15 @@ function render6(){const {W,H,dpr}=fit(c6,1.7);const g=g6;g.setTransform(1,0,0,1
     g.strokeStyle='rgba(120,150,210,0.14)';for(let i=0;i<12;i++){const a=i*Math.PI/6;line6(g,cam,[0,0.25,0.5,0.75,1].map(t=>[t*Math.cos(a),t*Math.sin(a),0]),W,H)}
     // the dome, faint
     g.strokeStyle='rgba(150,175,220,'+(0.10+0.12*near)+')';for(let i=0;i<6;i++){const a=i*Math.PI/6;line6(g,cam,ring(48,t=>[Math.cos(a)*Math.cos(t/2),Math.sin(a)*Math.cos(t/2),P6.dome*Math.sin(t/2)]),W,H)}
-    if(disk){g.strokeStyle='rgba(225,235,255,0.45)';g.lineWidth=1.2*dpr;line6(g,cam,ring(180,a=>[P6.dsize*Math.cos(a),P6.dsize*Math.sin(a),top]),W,H);g.lineWidth=1*dpr;if(near>0.3)label([P6.dsize*Math.cos(-0.6),P6.dsize*Math.sin(-0.6),top],'star disk','225,235,255',-11,near)}
+    if(disk&&!fan){g.strokeStyle='rgba(225,235,255,0.45)';g.lineWidth=1.2*dpr;line6(g,cam,ring(180,a=>[P6.dsize*Math.cos(a),P6.dsize*Math.sin(a),top]),W,H);g.lineWidth=1*dpr;if(near>0.3)label([P6.dsize*Math.cos(-0.6),P6.dsize*Math.sin(-0.6),top],'star disk','225,235,255',-11,near)}
+    if(fan){const Rf=P6.dsize,quad=(pts,fill,stroke)=>{const q=pts.map(P=>pj6(cam,P,W,H));if(q.some(x=>!x))return;g.beginPath();q.forEach((x,i)=>i?g.lineTo(x[0],x[1]):g.moveTo(x[0],x[1]));g.closePath();if(fill){g.fillStyle=fill;g.fill()}if(stroke){g.strokeStyle=stroke;g.stroke()}};
+      const at=(ph,f,w)=>{const c=Math.cos(ph),sn=Math.sin(ph);return [Rf*(f*c-w*sn),Rf*(f*sn+w*c),top]};g.lineWidth=1*dpr;
+      // the rod it hangs from, the paddles in slices so a part behind the camera does not take the rest with it, then the hub
+      g.strokeStyle='rgba(200,205,215,0.5)';g.lineWidth=2*dpr;line6(g,cam,[[0,0,top],[0,0,top+0.3*Rf]],W,H);g.lineWidth=1*dpr;
+      for(let b=0;b<FAN6.n;b++){const ph=b*2*Math.PI/FAN6.n-P6.theta;const N=14;for(let i=0;i<N;i++){const f0=FAN6.r0+(1-FAN6.r0)*i/N,f1=FAN6.r0+(1-FAN6.r0)*(i+1)/N;quad([at(ph,f0,-fanW6(f0)),at(ph,f1,-fanW6(f1)),at(ph,f1,fanW6(f1)),at(ph,f0,fanW6(f0))],'rgba(176,132,84,0.34)',null)}
+        g.strokeStyle='rgba(214,170,118,0.7)';const edge=sg=>{const o=[];for(let i=0;i<=N;i++){const f=FAN6.r0+(1-FAN6.r0)*i/N;o.push(at(ph,f,sg*fanW6(f)))}return o};line6(g,cam,edge(-1).concat(edge(1).reverse()),W,H)}
+      quad(ring(28,a=>[Rf*FAN6.hub*Math.cos(a),Rf*FAN6.hub*Math.sin(a),top]),'rgba(120,125,140,0.6)','rgba(200,205,215,0.7)');
+      if(near>0.3)label(at(-P6.theta,1.06,0),'ceiling fan','214,170,118',0,near)}
     if(P6.guide){g.strokeStyle='rgba(240,179,91,0.45)';g.setLineDash([4*dpr,5*dpr]);line6(g,cam,[[0,0,0],[0,0,top]],W,H);g.setLineDash([]);dotAt([0,0,top],'240,179,91',3.5);label([0,0,top],inside?'the one centre':'above the north pole','240,179,91',-13)}
     stars();
     dotAt([O.p[0],0,0],'255,255,255',3*near+0.01,near);if(near>0.3){label([O.p[0],0,0],P6.lat===28.3?'Tenerife':'observer','225,235,255',14,near);label([0,0,0],'N pole','150,175,220',12,near*0.8);label([0.5*Math.cos(2.2),0.5*Math.sin(2.2),0],'equator','150,175,220',-9,near*0.8)}
@@ -1160,7 +1171,7 @@ function render6(){const {W,H,dpr}=fit(c6,1.7);const g=g6;g.setTransform(1,0,0,1
   // compass along the horizon once the camera is down
   if(cam.t2>0.6){const a=(cam.t2-0.6)/0.4;g.font='600 '+(12*dpr)+'px '+mono;for(const [nm,hd] of [['N',0],['NE',45],['E',90],['SE',135],['S',180],['SW',225],['W',270],['NW',315]]){const h=hd*D;const d=[O.north[0]*Math.cos(h)+O.east[0]*Math.sin(h),O.north[1]*Math.cos(h)+O.east[1]*Math.sin(h),O.north[2]*Math.cos(h)+O.east[2]*Math.sin(h)];const q=pd6(cam,d,W,H);if(!q||q[0]<10||q[0]>W-10)continue;
       g.fillStyle='rgba(240,179,91,'+(nm.length===1?0.95:0.55)*a+')';g.fillText(nm,q[0],q[1]+13*dpr);g.fillRect(q[0]-0.5*dpr,q[1]-4*dpr,1*dpr,8*dpr)}}
-  document.getElementById('r6model').textContent=disk?'flat plane, stars on a disk above the dome':(flat?'flat plane, stars on the dome':'globe');
+  document.getElementById('r6model').textContent=fan?'flat plane, a ceiling fan above the dome':disk?'flat plane, stars on a disk above the dome':(flat?'flat plane, stars on the dome':'globe');
   document.getElementById('r6cam').textContent=inside?('on the ground at '+Math.abs(P6.lat).toFixed(1)+'° '+(P6.lat<0?'S':'N')+', looking '+compass(P6.head)):(cam.e>0.02?'flying':'outside');
   const none=tr<=0.02;document.getElementById('r6ccw').textContent=none?'—':nA;document.getElementById('r6str').textContent=none?'—':nS;document.getElementById('r6tilt').textContent=(!none&&inside&&tiltN)?' (lying '+Math.round(tiltSum/tiltN)+'° from the horizon)':'';document.getElementById('r6cw').textContent=none?'—':nC}
 const s6head=bind('s6head',P6,'head',x=>Math.round(((x%360)+360)%360)+'°','v6head');
@@ -1173,15 +1184,16 @@ bind('s6dsize',P6,'dsize',x=>{const r=(90-P6.lat)/180,t=P6.dome*DISK6;return x.t
 const s6dome=bind('s6dome',P6,'dome',x=>x.toFixed(2)+' R','v6dome',0.01);
 document.querySelectorAll('[data-h6]').forEach(b=>b.addEventListener('click',()=>s6head.set(+b.dataset.h6)));
 document.querySelectorAll('[data-l6]').forEach(b=>b.addEventListener('click',()=>s6lat.set(+b.dataset.l6)));
-const b6flat=document.getElementById('b6flat'),b6disk=document.getElementById('b6disk'),b6globe=document.getElementById('b6globe'),b6fly=document.getElementById('b6fly');
-function setModel6(m){const was=P6.model;if(was!=='globe'&&setModel6.done)DOME6[was]=P6.dome;P6.model=m;if(m!=='globe'&&m!==was)s6dome.set(DOME6[m]);const fl=m!=='globe';b6flat.classList.toggle('on',m==='flat');b6disk.classList.toggle('on',m==='disk');b6globe.classList.toggle('on',m==='globe');document.getElementById('n6flat').hidden=!fl;document.getElementById('n6globe').hidden=fl;
-  document.getElementById('w6dome').hidden=!fl;document.getElementById('w6pol').hidden=!fl;document.getElementById('c6pol').hidden=!fl;document.getElementById('w6dsize').hidden=m!=='disk';if(typeof pol6==='function'&&setModel6.done)pol6();
+const b6flat=document.getElementById('b6flat'),b6disk=document.getElementById('b6disk'),b6fan=document.getElementById('b6fan'),b6globe=document.getElementById('b6globe'),b6fly=document.getElementById('b6fly');
+function setModel6(m){const was=P6.model;if(was!=='globe'&&setModel6.done)DOME6[was]=P6.dome;P6.model=m;if(m!=='globe'&&m!==was)s6dome.set(DOME6[m]);const fl=m!=='globe';b6flat.classList.toggle('on',m==='flat');b6disk.classList.toggle('on',m==='disk');b6fan.classList.toggle('on',m==='fan');b6globe.classList.toggle('on',m==='globe');document.getElementById('n6flat').hidden=!fl;document.getElementById('n6globe').hidden=fl;
+  document.getElementById('w6dome').hidden=!fl;document.getElementById('w6pol').hidden=!fl;document.getElementById('c6pol').hidden=!fl;document.getElementById('w6dsize').hidden=!(m==='disk'||m==='fan');document.querySelector('label[for="s6dsize"]').textContent=m==='fan'?'Fan size':'Disk size';if(typeof pol6==='function'&&setModel6.done)pol6();
   if(P6.fly<0.5&&(fl!==(was!=='globe')||!setModel6.done)){if(fl){P6.az=-38;P6.el=24;P6.dist=3.3}else{P6.az=-34;P6.el=7;P6.dist=3.6}}setModel6.done=true;
-  document.getElementById('n6shape').textContent=m==='disk'?'one star field on a flat disk just above the dome':'one star field on one dome';
+  document.getElementById('n6shape').textContent=m==='fan'?'a ceiling fan the size of the sky, with a light at each point along its blades':m==='disk'?'one star field on a flat disk just above the dome':'one star field on one dome';
   document.getElementById('n6their').innerHTML=m==='flat'?'Flat earthers do not agree on where the stars are, so both versions are here: on the dome itself, or on a flat disk turning above it. Either can be reshaped freely, so the <b>Dome height</b> slider grants that, and <b>Polaris at the right height</b> keeps the pole star at the elevation you would measure at whatever latitude you choose. Watch the height it needs as you slide the latitude: a different sky for every observer, and none at all south of the equator. Leave that aside. The point here is narrower: whatever the shape, one field seen from below has one centre and one sense.'
+    :m==='fan'?'The favourite flat-earth picture of the sky is a ceiling fan: one thing turning overhead, with perspective left to explain the rest. So here is the fan, as wide as you care to make it, with lights along its blades leaving trails. Stand anywhere under it and face any way you like: every blade goes round the same way and every trail is the same colour. The only place the fan turns the other way is from above it, where the outside view puts you and where nobody standing on the plane can be. A fan seen from below does not have a far side that runs backwards.'
     :m==='disk'?'This is the other flat-earth version: the dome is only a lid, and the stars ride a flat disk turning above it. The <b>Dome height</b> slider lifts lid and disk together, and <b>Polaris at the right height</b> keeps the disk where the pole star has the elevation you would measure at whatever latitude you choose, which is a different height for every observer. <b>Disk size</b> makes it as wide as you like, so its edge comes down toward the horizon; the slider says how far above the horizon the edge still stands. A flat disk changes how the trails are spaced, and however wide it is the sky stays empty below its edge, but none of that changes their sense: one field, one centre, one way round.'
     :'The usual reply is that the globe picture needs a second pole that nobody in the north can see. Slide the latitude to Sydney: the pole that was under the southern horizon is now up in the south and the trails turn clockwise around it, with no second projector and no change to the rotation. Do the same on the flat plane and the one centre just moves lower in the north.'}
-b6flat.addEventListener('click',()=>setModel6('flat'));b6disk.addEventListener('click',()=>setModel6('disk'));b6globe.addEventListener('click',()=>setModel6('globe'));
+b6flat.addEventListener('click',()=>setModel6('flat'));b6disk.addEventListener('click',()=>setModel6('disk'));b6fan.addEventListener('click',()=>setModel6('fan'));b6globe.addEventListener('click',()=>setModel6('globe'));
 b6fly.addEventListener('click',()=>{if(P6.fly<0.5){s6head.set(90);s6pitch.set(22);P6.flyTarget=1}else P6.flyTarget=0});
 const b6play=document.getElementById('b6play');b6play.addEventListener('click',()=>{P6.playing=!P6.playing;b6play.textContent=P6.playing?'Pause':'Play'});
 const b6pol=document.getElementById('b6pol');
@@ -1189,7 +1201,7 @@ const b6pol=document.getElementById('b6pol');
 function pol6(){{const e=document.getElementById('s6dsize');if(!pol6.busy){pol6.busy=true;e.dispatchEvent(new Event('input'));pol6.busy=false}}const dKm=(90-P6.lat)*111.19,hKm=dKm*Math.tan(P6.lat*D),c=document.getElementById('c6pol');
   const need=P6.lat>0.05?'At '+Math.abs(P6.lat).toFixed(1)+'° N the pole star stands '+P6.lat.toFixed(1)+'° up, '+Math.round(dKm).toLocaleString('en-GB')+' km from the pole on the map, so it would have to be '+(Math.round(hKm/10)*10).toLocaleString('en-GB')+' km high.':(Math.abs(P6.lat)<=0.05?'At the equator the pole star sits on the horizon, so it would have to be 0 km high: lying on the ground.':'At '+Math.abs(P6.lat).toFixed(1)+'° S the pole star is '+Math.abs(P6.lat).toFixed(1)+'° below the horizon. No height above a flat plane puts it there.');
   c.textContent=need+(P6.polLock?' The height is following the latitude'+(P6.lat<=0.05?', held at the lowest the slider goes.':'.'):' Press the button and the height follows the latitude as you change it.');
-  if(P6.polLock&&isFlat6()){const r=(90-P6.lat)/180;s6dome.set(clamp(r*Math.tan(Math.max(0,P6.lat)*D)/(P6.model==='disk'?DISK6:1),0.03,1))}}
+  if(P6.polLock&&isFlat6()){const r=(90-P6.lat)/180;s6dome.set(clamp(r*Math.tan(Math.max(0,P6.lat)*D)/(isDisk6()?DISK6:1),0.03,1))}}
 b6pol.addEventListener('click',()=>{P6.polLock=!P6.polLock;b6pol.classList.toggle('on',P6.polLock);pol6()});
 document.getElementById('b6hemi').addEventListener('click',()=>{P6.polLock=false;b6pol.classList.remove('on');s6dome.set(1);pol6()});
 s6dome.el.addEventListener('input',()=>{if(P6.polLock){P6.polLock=false;b6pol.classList.remove('on')}pol6()});
